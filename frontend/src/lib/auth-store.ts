@@ -3,6 +3,7 @@ import type { UserProfile } from '../types/auth';
 
 interface AuthState {
   accessToken: string | null;
+  refreshToken: string | null;
   user: UserProfile | null;
   isAuthenticated: boolean;
   isInitialLoading: boolean;
@@ -10,6 +11,7 @@ interface AuthState {
 
 let state: AuthState = {
   accessToken: null,
+  refreshToken: null,
   user: null,
   isAuthenticated: false,
   isInitialLoading: true,
@@ -34,12 +36,13 @@ export const authStore = {
   },
 
   /**
-   * Almacena el Access Token EXCLUSIVAMENTE en memoria.
-   * Regla de seguridad: Cero persistencia en localStorage/sessionStorage.
+   * Almacena tokens en memoria para mitigar vectores XSS.
+   * En plataformas móviles híbridas, el Refresh Token se gestiona en memoria o almacenamiento seguro.
    */
-  setSession(accessToken: string, user: UserProfile) {
+  setSession(accessToken: string, user: UserProfile, refreshToken?: string | null) {
     state = {
       accessToken,
+      refreshToken: refreshToken !== undefined ? refreshToken : state.refreshToken,
       user,
       isAuthenticated: true,
       isInitialLoading: false,
@@ -50,6 +53,7 @@ export const authStore = {
   clearSession() {
     state = {
       accessToken: null,
+      refreshToken: null,
       user: null,
       isAuthenticated: false,
       isInitialLoading: false,
@@ -67,6 +71,10 @@ export const authStore = {
 
   getAccessToken(): string | null {
     return state.accessToken;
+  },
+
+  getRefreshToken(): string | null {
+    return state.refreshToken;
   },
 };
 

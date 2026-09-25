@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { authStore } from './auth-store';
 import type { AuthSuccessResponse } from '../types/auth';
 
@@ -9,19 +10,27 @@ function processQueue(token: string | null) {
   refreshQueue = [];
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 /**
  * Cliente HTTP ligero y tipado sobre fetch nativo.
- * Cumple con:
- * - Nivel 1 de dependencias (Web APIs nativas)
- * - credentials: 'include' para Cookies HttpOnly
+ * Soporta de manera transparente:
+ * - Web Browser: Cookies HttpOnly con credentials: 'include'
+ * - Native Mobile (Capacitor): Header X-Client-Platform y Refresh Token vía JSON
  * - Silent Refresh seguro con cola de peticiones concurrentes
  */
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith('http') ? endpoint : endpoint;
+  const isNative = Capacitor.isNativePlatform();
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
   const headers = new Headers(options.headers || {});
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
+  }
+
+  // Header para identificar plataforma móvil nativa si aplica
+  if (isNative && !headers.has('X-Client-Platform')) {
+    headers.set('X-Client-Platform', Capacitor.getPlatform());
   }
 
   const token = authStore.getAccessToken();
@@ -32,7 +41,7 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
   const config: RequestInit = {
     ...options,
     headers,
-    credentials: 'include', // Requerido para envío de cookies HttpOnly de Refresh Token
+    credentials: 'include', // Requerido para envío de cookies HttpOnly en Web
   };
 
   const response = await fetch(url, config);
@@ -56,10 +65,17 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
     isRefreshing = true;
 
     try {
-      const refreshResponse = await fetch('/api/auth/refresh', {
+      const mobileRefreshToken = isNative ? authStore.getRefreshToken() : null;
+      const refreshHeaders = new Headers({ 'Content-Type': 'application/json' });
+      if (isNative) {
+        refreshHeaders.set('X-Client-Platform', Capacitor.getPlatform());
+      }
+
+      const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: refreshHeaders,
+        body: JSON.stringify(mobileRefreshToken ? { refreshToken: mobileRefreshToken } : {}),
       });
 
       if (!refreshResponse.ok) {
@@ -69,7 +85,7 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
       }
 
       const data: AuthSuccessResponse = await refreshResponse.json();
-      authStore.setSession(data.accessToken, data.user);
+      authStore.setSession(data.accessToken, data.user, data.refreshToken);
       processQueue(data.accessToken);
 
       // Reintentar la petición original con el nuevo token

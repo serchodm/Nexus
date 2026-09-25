@@ -50,7 +50,7 @@ export function AuthSection() {
         setMfaChallengeToken(response.mfaToken);
       } else if ('accessToken' in response) {
         // Login directo exitoso
-        authStore.setSession(response.accessToken, response.user);
+        authStore.setSession(response.accessToken, response.user, response.refreshToken);
       }
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : 'Error al autenticar');
@@ -69,7 +69,7 @@ export function AuthSection() {
     setErrorMessage(null);
 
     try {
-      const response = await apiClient<{ success: boolean; accessToken: string; user: AuthSuccessResponse['user'] }>('/api/auth/mfa/verify', {
+      const response = await apiClient<{ success: boolean; accessToken: string; refreshToken?: string; user: AuthSuccessResponse['user'] }>('/api/auth/mfa/verify', {
         method: 'POST',
         body: JSON.stringify({
           code,
@@ -78,7 +78,7 @@ export function AuthSection() {
       });
 
       if (response.success && response.accessToken) {
-        authStore.setSession(response.accessToken, response.user);
+        authStore.setSession(response.accessToken, response.user, response.refreshToken);
         setMfaChallengeToken(null);
         setMfaCode(['', '', '', '', '', '']);
       }
@@ -140,7 +140,11 @@ export function AuthSection() {
   // 5. Cerrar Sesión
   const handleLogout = async () => {
     try {
-      await apiClient('/api/auth/logout', { method: 'POST' });
+      const mobileToken = authStore.getRefreshToken();
+      await apiClient('/api/auth/logout', { 
+        method: 'POST',
+        body: JSON.stringify(mobileToken ? { refreshToken: mobileToken } : {})
+      });
     } finally {
       authStore.clearSession();
       setMfaChallengeToken(null);

@@ -11,6 +11,7 @@ public record GoogleLoginResponse(
     bool MfaRequired,
     string? MfaToken,
     string? AccessToken,
+    string? RefreshToken,
     UserProfileDto? User
 );
 
@@ -68,10 +69,16 @@ public sealed class GoogleLoginEndpoint : Endpoint<GoogleLoginRequest, GoogleLog
             });
         }
 
+        var isMobile = HttpContext.Request.Headers.TryGetValue("X-Client-Platform", out var platform) 
+            && (platform.ToString().Equals("mobile", StringComparison.OrdinalIgnoreCase)
+                || platform.ToString().Equals("android", StringComparison.OrdinalIgnoreCase)
+                || platform.ToString().Equals("ios", StringComparison.OrdinalIgnoreCase));
+
         await Send.OkAsync(new GoogleLoginResponse(
             result.MfaRequired,
             result.MfaToken,
             result.AccessToken,
+            isMobile ? result.RawRefreshToken : null,
             result.User
         ), ct);
     }

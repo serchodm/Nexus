@@ -4,12 +4,15 @@ using Nexus.Application.Auth.DTOs;
 
 namespace Nexus.Api.Endpoints.Auth;
 
+public record RefreshTokenRequest(string? RefreshToken);
+
 public record RefreshTokenResponse(
     string AccessToken,
+    string? RefreshToken,
     UserProfileDto User
 );
 
-public sealed class RefreshTokenEndpoint : EndpointWithoutRequest<RefreshTokenResponse>
+public sealed class RefreshTokenEndpoint : Endpoint<RefreshTokenRequest, RefreshTokenResponse>
 {
     private readonly RefreshTokenCommandHandler _handler;
 
@@ -24,17 +27,23 @@ public sealed class RefreshTokenEndpoint : EndpointWithoutRequest<RefreshTokenRe
         AllowAnonymous();
         Summary(s =>
         {
-            s.Summary = "Renueva la sesión mediante la Cookie HttpOnly (Silent Refresh)";
+            s.Summary = "Renueva la sesión mediante Cookie HttpOnly o JSON body (para apps móviles nativas)";
             s.Description = "Aplica rotación estricta de Refresh Token y emite un nuevo Access Token.";
         });
     }
 
-    public override async Task HandleAsync(CancellationToken ct)
+    public override async Task HandleAsync(RefreshTokenRequest req, CancellationToken ct)
     {
-        if (!HttpContext.Request.Cookies.TryGetValue("nexus_refresh_token", out var rawRefreshToken) 
-            || string.IsNullOrWhiteSpace(rawRefreshToken))
+        // 1. Obtener el token desde el cuerpo JSON (clientes móviles) o desde la Cookie HttpOnly (web)
+        string? rawRefreshToken = req.RefreshToken;
+        if (string.IsNullOrWhiteSpace(rawRefreshToken))
         {
-            ThrowError("No se encontró la cookie de sesión.", 401);
+            HttpContext.Request.Cookies.TryGetValue("nexus_refresh_token", out rawRefreshToken);
+        }
+
+        if (string.IsNullOrWhiteSpace(rawRefreshToken))
+        {
+            ThrowError("No se proporcionó el token de sesión (cookie o JSON body requerido).", 401);
         }
 
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -62,6 +71,16 @@ public sealed class RefreshTokenEndpoint : EndpointWithoutRequest<RefreshTokenRe
             });
         }
 
-        await Send.OkAsync(new RefreshTokenResponse(result.AccessToken, result.User), ct);
+        var isMobile = !string.IsNullOrWhiteSpace(req.RefreshToken) 
+            || (HttpContext.Request.Headers.TryGetValue("X-Client-Platform", out var platform) 
+                && (platform.ToString().Equals("mobile", StringComparison.OrdinalIgnoreCase)
+                    || platform.ToString().Equals("android", StringComparison.OrdinalIgnoreCase)
+                    || platform.ToString().Equals("ios", StringComparison.OrdinalIgnoreCase)));
+
+        await Send.OkAsync(new RefreshTokenResponse(
+            result.AccessToken,
+            isMobile ? result.NewRawRefreshToken : null,
+            result.User
+        ), ct);
     }
 }

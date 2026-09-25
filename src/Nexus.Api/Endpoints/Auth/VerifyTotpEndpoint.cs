@@ -14,6 +14,7 @@ public record VerifyTotpRequest(
 public record VerifyTotpResponse(
     bool Success,
     string? AccessToken,
+    string? RefreshToken,
     UserProfileDto? User
 );
 
@@ -85,9 +86,15 @@ public sealed class VerifyTotpEndpoint : Endpoint<VerifyTotpRequest, VerifyTotpR
             });
         }
 
+        var isMobile = HttpContext.Request.Headers.TryGetValue("X-Client-Platform", out var platform) 
+            && (platform.ToString().Equals("mobile", StringComparison.OrdinalIgnoreCase)
+                || platform.ToString().Equals("android", StringComparison.OrdinalIgnoreCase)
+                || platform.ToString().Equals("ios", StringComparison.OrdinalIgnoreCase));
+
         await Send.OkAsync(new VerifyTotpResponse(
             result.Success,
             result.AccessToken,
+            isMobile ? result.RawRefreshToken : null,
             result.User
         ), ct);
     }

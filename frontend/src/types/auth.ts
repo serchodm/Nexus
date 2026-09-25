@@ -9,14 +9,15 @@ export interface UserProfile {
 
 export interface AuthSuccessResponse {
   accessToken: string;
-  expiresIn: number;
+  refreshToken?: string | null;
+  expiresIn?: number;
   user: UserProfile;
 }
 
 export interface MfaRequiredResponse {
   mfaRequired: true;
   mfaToken: string; // Token temporal con validez de 5 minutos (scope: mfa_pending)
-  message: string;
+  message?: string;
 }
 
 export type AuthResponse = AuthSuccessResponse | MfaRequiredResponse;
