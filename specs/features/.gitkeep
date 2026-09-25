@@ -1,0 +1,6 @@
+# Directorio de Features SDD
+Cada funcionalidad se creará como un subdirectorio aquí con el formato:
+`XXX-nombre-feature/`
+  ├── `01-spec.md`
+  ├── `02-tech-spec.md`
+  └── `03-tasks.md`
