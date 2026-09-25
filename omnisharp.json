@@ -1,0 +1,6 @@
+{
+  "RoslynExtensionsOptions": {
+    "enableAnalyzersSupport": false,
+    "enableDecompilationSupport": false
+  }
+}
