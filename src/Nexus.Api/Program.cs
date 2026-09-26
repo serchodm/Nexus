@@ -5,7 +5,11 @@ using Nexus.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 0. Soporte para codificaciones heredadas de banca española (Windows-1252/ISO-8859-1)
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
 // 1. Inyección de Dependencias por Capas (Clean Architecture)
+builder.Services.AddMemoryCache();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 

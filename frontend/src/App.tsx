@@ -12,10 +12,13 @@ import {
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { AuthSection } from './components/auth/AuthSection';
+import { StatementsManager } from './components/statements/StatementsManager';
 import { useHealthCheck } from './hooks/useHealthCheck';
+import { useAuth } from './lib/auth-store';
 
 export default function App() {
   const { data: health, isLoading, isError, refetch, isFetching } = useHealthCheck();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -165,6 +168,9 @@ export default function App() {
 
         {/* Sección Interactiva de Autenticación & MFA */}
         <AuthSection />
+
+        {/* Vertical Slice 001: Ingesta y Almacenamiento Inmutable de Extractos Multi-Banco */}
+        {isAuthenticated && <StatementsManager />}
 
         {/* Roadmap & Phases Grid */}
         <section style={{ marginBottom: '3.5rem' }}>

@@ -39,6 +39,9 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+        services.AddScoped<IStatementImportRepository, StatementImportRepository>();
+        services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
 
         // Servicios de Seguridad y Autenticación (Fase 3)
         services.AddSingleton<ITokenGenerator, TokenGenerator>();

@@ -13,6 +13,9 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
+    public DbSet<StatementImport> StatementImports => Set<StatementImport>();
+    public DbSet<BankTransaction> BankTransactions => Set<BankTransaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
