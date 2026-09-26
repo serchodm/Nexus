@@ -71,25 +71,25 @@
   - *Criterio de verificación*: `dotnet build` global y 47/47 tests unitarios pasando al 100%.
 
 ### Fase 4: Presentación API (`Nexus.Api`)
-- [ ] **Tarea 4.1**: Endpoints de Categorías (FastEndpoints):
+- [x] **Tarea 4.1**: Endpoints de Categorías (FastEndpoints):
   - `GET /api/categories` (`GetCategoryTreeEndpoint`)
   - `POST /api/categories` (`CreateCategoryEndpoint`)
   - `PUT /api/categories/{id}` (`UpdateCategoryEndpoint`)
   - `DELETE /api/categories/{id}` (`DeleteCategoryEndpoint`)
-- [ ] **Tarea 4.2**: Endpoints de Reglas:
+- [x] **Tarea 4.2**: Endpoints de Reglas:
   - `GET /api/rules` (`GetRulesEndpoint`)
   - `POST /api/rules` (`CreateCategorizationRuleEndpoint`)
   - `PUT /api/rules/{id}` (`UpdateCategorizationRuleEndpoint`)
   - `DELETE /api/rules/{id}` (`DeleteCategorizationRuleEndpoint`)
   - `POST /api/rules/apply-retroactive` (`ApplyRulesRetroactiveEndpoint`)
-- [ ] **Tarea 4.3**: Endpoints de Transacciones y Splits:
+- [x] **Tarea 4.3**: Endpoints de Transacciones y Splits:
   - `GET /api/transactions` (`GetTransactionsEndpoint`)
   - `GET /api/transactions/{id}` (`GetTransactionByIdEndpoint`)
   - `PATCH /api/transactions/{id}/categorize` (`CategorizeTransactionEndpoint`)
   - `POST /api/transactions/{id}/split` (`SplitTransactionEndpoint`)
   - `DELETE /api/transactions/{id}/split` (`ResetTransactionSplitsEndpoint`)
-- [ ] **Tarea 4.4**: Registro de Servicios en Dependency Injection.
-  - *Criterio de verificación*: `dotnet build` global y Swagger interactivo con los nuevos endpoints operativos.
+- [x] **Tarea 4.4**: Registro de Servicios en Dependency Injection y OpenAPI / Swagger.
+  - *Criterio de verificación*: `dotnet build` global con 0 errores y 14 endpoints FastEndpoints operativos.
 
 ### Fase 5: Pruebas Unitarias y de Integración (`Nexus.UnitTests`)
 - [ ] **Tarea 5.1**: Tests Unitarios de Dominio:
