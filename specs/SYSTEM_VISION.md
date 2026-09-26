@@ -3,7 +3,7 @@
 - **Documento**: Documento de Visión Macro y Contexto de Negocio
 - **Nivel de Gobernanza**: Nivel 0 (Marco General de Referencia — No genera código directo)
 - **Estado**: Aprobado
-- **Última Actualización**: 2026-09-26
+- **Última Actualización**: 2026-09-27
 
 ---
 
@@ -39,13 +39,18 @@ Visualización centralizada de los distintos componentes patrimoniales del usuar
   - **Gasto Individual**: Imputable únicamente al usuario para su control personal.
   - **Gasto Compartido**: Imputable a un grupo o conjunto de personas para el cálculo y liquidación de saldos compartidos.
 
-### Pilar 4: Categorización de Movimientos
+### Pilar 4: Categorización Autónoma e Inteligente de Movimientos
 - Asignación de categorías estructuradas a cada movimiento para permitir el desglose analítico del gasto.
-- El sistema contemplará mecanismos para que dicha categorización pueda realizarse de manera **automática y/o autónoma**.
+- Clasificación autónoma mediante motor de reglas determinista, merchant intelligence y aprendizaje interactivo.
+- Detección de naturaleza del gasto (Fijo / Recurrente vs. Variable / Discrecional) y soporte de desgloses de tickets (Split Transactions).
+
+### Pilar 5: Conectores de Comercio y Pasarelas de Pago Online (Amazon, PayPal, etc.)
+- Reconciliación cruzada entre cargos bancarios genéricos u opacos (ej. `AMZN MKTP ES`, `PAYPAL *[código]`) y el detalle real de pedidos de plataformas externas.
+- Extracción de artículos específicos, cuotas de pagos a plazos (Buy Now Pay Later) y comercios subyacentes para una categorización precisa y enriquecida.
 
 ---
 
 ## 4. Límites y Filosofía de Evolución (SDD)
 
 Este documento actúa como el **Norte Estratégico** del producto. 
-A partir de estos cuatro pilares, el desarrollo técnico se ejecutará mediante **especificaciones incrementales por Vertical Slice** (carpeta `specs/features/`), abordando cada capacidad de forma aislada, autocontenida y verificable antes de proceder a la siguiente.
+A partir de estos cinco pilares, el desarrollo técnico se ejecutará mediante **especificaciones incrementales por Vertical Slice** (carpeta `specs/features/`), abordando cada capacidad de forma aislada, autocontenida y verificable antes de proceder a la siguiente.
