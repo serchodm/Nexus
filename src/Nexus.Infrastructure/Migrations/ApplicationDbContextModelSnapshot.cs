@@ -169,6 +169,19 @@ namespace Nexus.Infrastructure.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("bank_subcategory");
 
+                    b.Property<int>("CategorizationSource")
+                        .HasColumnType("integer")
+                        .HasColumnName("categorization_source");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("CleanMerchantName")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("clean_merchant_name");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -191,15 +204,45 @@ namespace Nexus.Infrastructure.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("description");
 
+                    b.Property<int>("ExpenseFlexibility")
+                        .HasColumnType("integer")
+                        .HasColumnName("expense_flexibility");
+
+                    b.Property<int>("ExpenseNature")
+                        .HasColumnType("integer")
+                        .HasColumnName("expense_nature");
+
+                    b.Property<int>("ExternalPlatform")
+                        .HasColumnType("integer")
+                        .HasColumnName("external_platform");
+
                     b.Property<string>("Fingerprint")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("fingerprint");
 
+                    b.Property<bool>("HasSplits")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("has_splits");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsManual")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_manual");
+
+                    b.Property<bool>("IsRecurring")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_recurring");
 
                     b.Property<string>("Observations")
                         .HasColumnType("text")
@@ -209,14 +252,28 @@ namespace Nexus.Infrastructure.Migrations
                         .HasColumnType("date")
                         .HasColumnName("operation_date");
 
+                    b.Property<bool>("PendingPlatformEnrichment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("pending_platform_enrichment");
+
                     b.Property<string>("RawDataJson")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("raw_data_json");
 
+                    b.Property<int>("RecurrencePeriod")
+                        .HasColumnType("integer")
+                        .HasColumnName("recurrence_period");
+
                     b.Property<Guid>("StatementImportId")
                         .HasColumnType("uuid")
                         .HasColumnName("statement_import_id");
+
+                    b.Property<Guid?>("SubcategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("subcategory_id");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -229,8 +286,17 @@ namespace Nexus.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_bank_transactions");
 
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_bank_transactions_category_id");
+
                     b.HasIndex("StatementImportId")
                         .HasDatabaseName("ix_bank_transactions_statement_import_id");
+
+                    b.HasIndex("SubcategoryId")
+                        .HasDatabaseName("ix_bank_transactions_subcategory_id");
+
+                    b.HasIndex("BankAccountId", "CleanMerchantName")
+                        .HasDatabaseName("ix_bank_transactions_account_clean_merchant");
 
                     b.HasIndex("BankAccountId", "Fingerprint")
                         .IsUnique()
@@ -241,6 +307,790 @@ namespace Nexus.Infrastructure.Migrations
                         .HasDatabaseName("ix_bank_transactions_account_date");
 
                     b.ToTable("bank_transactions", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.CategorizationRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("MatchType")
+                        .HasColumnType("integer")
+                        .HasColumnName("match_type");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedPattern")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("normalized_pattern");
+
+                    b.Property<string>("Pattern")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("pattern");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(100)
+                        .HasColumnName("priority");
+
+                    b.Property<int?>("SetExpenseFlexibility")
+                        .HasColumnType("integer")
+                        .HasColumnName("set_expense_flexibility");
+
+                    b.Property<int?>("SetExpenseNature")
+                        .HasColumnType("integer")
+                        .HasColumnName("set_expense_nature");
+
+                    b.Property<bool?>("SetIsRecurring")
+                        .HasColumnType("boolean")
+                        .HasColumnName("set_is_recurring");
+
+                    b.Property<Guid>("TargetCategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("target_category_id");
+
+                    b.Property<Guid?>("TargetSubcategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("target_subcategory_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_categorization_rules");
+
+                    b.HasIndex("TargetCategoryId")
+                        .HasDatabaseName("ix_categorization_rules_target_category_id");
+
+                    b.HasIndex("TargetSubcategoryId")
+                        .HasDatabaseName("ix_categorization_rules_target_subcategory_id");
+
+                    b.HasIndex("UserId", "IsActive", "Priority")
+                        .HasDatabaseName("ix_categorization_rules_user_active_priority");
+
+                    b.ToTable("categorization_rules", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ColorHex")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("#64748B")
+                        .HasColumnName("color_hex");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("DefaultExpenseNature")
+                        .HasColumnType("integer")
+                        .HasColumnName("default_expense_nature");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("display_order");
+
+                    b.Property<int>("FlowType")
+                        .HasColumnType("integer")
+                        .HasColumnName("flow_type");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("tag")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_system");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("normalized_name");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_category_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_categories");
+
+                    b.HasIndex("NormalizedName")
+                        .HasDatabaseName("ix_categories_normalized_name");
+
+                    b.HasIndex("ParentCategoryId")
+                        .HasDatabaseName("ix_categories_parent_category_id");
+
+                    b.HasIndex("UserId", "ParentCategoryId", "NormalizedName")
+                        .HasDatabaseName("ix_categories_user_parent_normalized");
+
+                    b.ToTable("categories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0001-000000000000"),
+                            ColorHex = "#10B981",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "utensils",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Alimentación",
+                            NormalizedName = "ALIMENTACION"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0001-000000000001"),
+                            ColorHex = "#10B981",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "shopping-cart",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Supermercados",
+                            NormalizedName = "SUPERMERCADOS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0001-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0001-000000000002"),
+                            ColorHex = "#10B981",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "utensils",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Restaurantes y Bares",
+                            NormalizedName = "RESTAURANTES Y BARES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0001-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0001-000000000003"),
+                            ColorHex = "#10B981",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "coffee",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Cafeterías",
+                            NormalizedName = "CAFETERIAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0001-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0001-000000000004"),
+                            ColorHex = "#10B981",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "bike",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Comida a Domicilio",
+                            NormalizedName = "COMIDA A DOMICILIO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0001-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000000"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "home",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Hogar y Vivienda",
+                            NormalizedName = "HOGAR Y VIVIENDA"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000001"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "key",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Alquiler e Hipoteca",
+                            NormalizedName = "ALQUILER E HIPOTECA",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0002-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000002"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "zap",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Electricidad y Gas",
+                            NormalizedName = "ELECTRICIDAD Y GAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0002-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000003"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "droplet",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Agua",
+                            NormalizedName = "AGUA",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0002-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000004"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "wifi",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Internet y Teléfono",
+                            NormalizedName = "INTERNET Y TELEFONO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0002-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0002-000000000005"),
+                            ColorHex = "#3B82F6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 2,
+                            DisplayOrder = 5,
+                            FlowType = 1,
+                            Icon = "hammer",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Menaje y Reformas",
+                            NormalizedName = "MENAJE Y REFORMAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0002-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000000"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "car",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Transporte",
+                            NormalizedName = "TRANSPORTE"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000001"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "fuel",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Combustible",
+                            NormalizedName = "COMBUSTIBLE",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0003-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000002"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "bus",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Transporte Público",
+                            NormalizedName = "TRANSPORTE PUBLICO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0003-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000003"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "navigation",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Taxi y VTC",
+                            NormalizedName = "TAXI Y VTC",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0003-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000004"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "circle-parking",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Parking y Peajes",
+                            NormalizedName = "PARKING Y PEAJES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0003-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0003-000000000005"),
+                            ColorHex = "#F59E0B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 5,
+                            FlowType = 1,
+                            Icon = "wrench",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Mantenimiento Vehículo",
+                            NormalizedName = "MANTENIMIENTO VEHICULO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0003-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000000"),
+                            ColorHex = "#8B5CF6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "tv",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Suscripciones y Servicios",
+                            NormalizedName = "SUSCRIPCIONES Y SERVICIOS"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000001"),
+                            ColorHex = "#8B5CF6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "play",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Streaming Multimedia",
+                            NormalizedName = "STREAMING MULTIMEDIA",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0004-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000002"),
+                            ColorHex = "#8B5CF6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "cloud",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Software y Nube",
+                            NormalizedName = "SOFTWARE Y NUBE",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0004-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000003"),
+                            ColorHex = "#8B5CF6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "dumbbell",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Gimnasio y Membresías",
+                            NormalizedName = "GIMNASIO Y MEMBRESIAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0004-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0005-000000000000"),
+                            ColorHex = "#EC4899",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 5,
+                            FlowType = 1,
+                            Icon = "sparkles",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Ocio y Estilo de Vida",
+                            NormalizedName = "OCIO Y ESTILO DE VIDA"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0005-000000000001"),
+                            ColorHex = "#EC4899",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "plane",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Viajes y Vacaciones",
+                            NormalizedName = "VIAJES Y VACACIONES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0005-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0005-000000000002"),
+                            ColorHex = "#EC4899",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "film",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Cine y Teatro",
+                            NormalizedName = "CINE Y TEATRO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0005-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0005-000000000003"),
+                            ColorHex = "#EC4899",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "shirt",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Ropa y Calzado",
+                            NormalizedName = "ROPA Y CALZADO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0005-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0005-000000000004"),
+                            ColorHex = "#EC4899",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "trophy",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Hobbies y Deporte",
+                            NormalizedName = "HOBBIES Y DEPORTE",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0005-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0006-000000000000"),
+                            ColorHex = "#06B6D4",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 6,
+                            FlowType = 1,
+                            Icon = "heart-pulse",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Salud y Bienestar",
+                            NormalizedName = "SALUD Y BIENESTAR"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0006-000000000001"),
+                            ColorHex = "#06B6D4",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "pill",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Farmacia",
+                            NormalizedName = "FARMACIA",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0006-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0006-000000000002"),
+                            ColorHex = "#06B6D4",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "stethoscope",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Médicos y Dentista",
+                            NormalizedName = "MEDICOS Y DENTISTA",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0006-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0006-000000000003"),
+                            ColorHex = "#06B6D4",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "glasses",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Óptica y Cuidado Personal",
+                            NormalizedName = "OPTICA Y CUIDADO PERSONAL",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0006-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000000"),
+                            ColorHex = "#22C55E",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 7,
+                            FlowType = 2,
+                            Icon = "wallet",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Finanzas e Ingresos",
+                            NormalizedName = "FINANZAS E INGRESOS"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000001"),
+                            ColorHex = "#22C55E",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 2,
+                            Icon = "banknote",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Nómina y Salario",
+                            NormalizedName = "NOMINA Y SALARIO",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0007-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ColorHex = "#22C55E",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 2,
+                            Icon = "trending-up",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Dividendos e Intereses",
+                            NormalizedName = "DIVIDENDOS E INTERESES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0007-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000003"),
+                            ColorHex = "#22C55E",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 2,
+                            Icon = "arrow-down-left",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Transferencias Recibidas",
+                            NormalizedName = "TRANSFERENCIAS RECIBIDAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0007-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000004"),
+                            ColorHex = "#22C55E",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 4,
+                            FlowType = 2,
+                            Icon = "undo",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Devoluciones",
+                            NormalizedName = "DEVOLUCIONES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0007-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0008-000000000000"),
+                            ColorHex = "#64748B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 8,
+                            FlowType = 1,
+                            Icon = "receipt",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Impuestos y Tasas",
+                            NormalizedName = "IMPUESTOS Y TASAS"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0008-000000000001"),
+                            ColorHex = "#64748B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 1,
+                            FlowType = 1,
+                            Icon = "file-text",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "IRPF",
+                            NormalizedName = "IRPF",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0008-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0008-000000000002"),
+                            ColorHex = "#64748B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 2,
+                            FlowType = 1,
+                            Icon = "landmark",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "IBI y Tasas Municipales",
+                            NormalizedName = "IBI Y TASAS MUNICIPALES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0008-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0008-000000000003"),
+                            ColorHex = "#64748B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 3,
+                            FlowType = 1,
+                            Icon = "shield",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Seguros Generales",
+                            NormalizedName = "SEGUROS GENERALES",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0008-000000000000")
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0008-000000000004"),
+                            ColorHex = "#64748B",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DefaultExpenseNature = 1,
+                            DisplayOrder = 4,
+                            FlowType = 1,
+                            Icon = "percent",
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Comisiones Bancarias",
+                            NormalizedName = "COMISIONES BANCARIAS",
+                            ParentCategoryId = new Guid("00000000-0000-0000-0008-000000000000")
+                        });
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.RefreshToken", b =>
@@ -397,6 +1247,70 @@ namespace Nexus.Infrastructure.Migrations
                     b.ToTable("statement_imports", (string)null);
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.TransactionSplitItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("BankTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bank_transaction_id");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("ExpenseNature")
+                        .HasColumnType("integer")
+                        .HasColumnName("expense_nature");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("SubcategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("subcategory_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transaction_split_items");
+
+                    b.HasIndex("BankTransactionId")
+                        .HasDatabaseName("ix_transaction_split_items_transaction_id");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_transaction_split_items_category_id");
+
+                    b.HasIndex("SubcategoryId")
+                        .HasDatabaseName("ix_transaction_split_items_subcategory_id");
+
+                    b.ToTable("transaction_split_items", (string)null);
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -500,6 +1414,12 @@ namespace Nexus.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_bank_transactions_bank_accounts_bank_account_id");
 
+                    b.HasOne("Nexus.Domain.Entities.Category", "Category")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_bank_transactions_categories_category_id");
+
                     b.HasOne("Nexus.Domain.Entities.StatementImport", "StatementImport")
                         .WithMany("Transactions")
                         .HasForeignKey("StatementImportId")
@@ -507,9 +1427,67 @@ namespace Nexus.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_bank_transactions_statement_imports_statement_import_id");
 
+                    b.HasOne("Nexus.Domain.Entities.Category", "Subcategory")
+                        .WithMany()
+                        .HasForeignKey("SubcategoryId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_bank_transactions_categories_subcategory_id");
+
                     b.Navigation("BankAccount");
 
+                    b.Navigation("Category");
+
                     b.Navigation("StatementImport");
+
+                    b.Navigation("Subcategory");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.CategorizationRule", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.Category", "TargetCategory")
+                        .WithMany()
+                        .HasForeignKey("TargetCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_categorization_rules_categories_target_category_id");
+
+                    b.HasOne("Nexus.Domain.Entities.Category", "TargetSubcategory")
+                        .WithMany()
+                        .HasForeignKey("TargetSubcategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_categorization_rules_categories_target_subcategory_id");
+
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany("CategorizationRules")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_categorization_rules_users_user_id");
+
+                    b.Navigation("TargetCategory");
+
+                    b.Navigation("TargetSubcategory");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_categories_categories_parent_category_id");
+
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_categories_users_user_id");
+
+                    b.Navigation("ParentCategory");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.RefreshToken", b =>
@@ -536,9 +1514,52 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("BankAccount");
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.TransactionSplitItem", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "BankTransaction")
+                        .WithMany("SplitItems")
+                        .HasForeignKey("BankTransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_split_items_bank_transactions_bank_transaction_");
+
+                    b.HasOne("Nexus.Domain.Entities.Category", "Category")
+                        .WithMany("SplitItems")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_split_items_categories_category_id");
+
+                    b.HasOne("Nexus.Domain.Entities.Category", "Subcategory")
+                        .WithMany()
+                        .HasForeignKey("SubcategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_transaction_split_items_categories_subcategory_id");
+
+                    b.Navigation("BankTransaction");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Subcategory");
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.BankAccount", b =>
                 {
                     b.Navigation("Imports");
+
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.BankTransaction", b =>
+                {
+                    b.Navigation("SplitItems");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("SplitItems");
+
+                    b.Navigation("Subcategories");
 
                     b.Navigation("Transactions");
                 });
@@ -550,6 +1571,10 @@ namespace Nexus.Infrastructure.Migrations
 
             modelBuilder.Entity("Nexus.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Categories");
+
+                    b.Navigation("CategorizationRules");
+
                     b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618

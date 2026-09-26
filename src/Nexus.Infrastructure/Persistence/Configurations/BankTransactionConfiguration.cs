@@ -45,6 +45,51 @@ public sealed class BankTransactionConfiguration : IEntityTypeConfiguration<Bank
             .IsRequired()
             .HasMaxLength(64);
 
+        // --- Feature 002: Enriquecimiento, Categorización y Merchant Intelligence ---
+        builder.Property(x => x.CleanMerchantName)
+            .HasMaxLength(150);
+
+        builder.Property(x => x.CategorizationSource)
+            .IsRequired();
+
+        builder.Property(x => x.IsManual)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.IsRecurring)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.RecurrencePeriod)
+            .IsRequired();
+
+        builder.Property(x => x.ExpenseFlexibility)
+            .IsRequired();
+
+        builder.Property(x => x.ExpenseNature)
+            .IsRequired();
+
+        builder.Property(x => x.ExternalPlatform)
+            .IsRequired();
+
+        builder.Property(x => x.PendingPlatformEnrichment)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.HasSplits)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.HasOne(x => x.Category)
+            .WithMany(x => x.Transactions)
+            .HasForeignKey(x => x.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(x => x.Subcategory)
+            .WithMany()
+            .HasForeignKey(x => x.SubcategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasOne(x => x.BankAccount)
             .WithMany(x => x.Transactions)
             .HasForeignKey(x => x.BankAccountId)
@@ -66,6 +111,12 @@ public sealed class BankTransactionConfiguration : IEntityTypeConfiguration<Bank
 
         builder.HasIndex(x => new { x.BankAccountId, x.OperationDate })
             .HasDatabaseName("ix_bank_transactions_account_date");
+
+        builder.HasIndex(x => x.CategoryId)
+            .HasDatabaseName("ix_bank_transactions_category_id");
+
+        builder.HasIndex(x => new { x.BankAccountId, x.CleanMerchantName })
+            .HasDatabaseName("ix_bank_transactions_account_clean_merchant");
 
         // Query filter global para soft-delete
         builder.HasQueryFilter(x => !x.IsDeleted);

@@ -16,6 +16,9 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<StatementImport> StatementImports => Set<StatementImport>();
     public DbSet<BankTransaction> BankTransactions => Set<BankTransaction>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<CategorizationRule> CategorizationRules => Set<CategorizationRule>();
+    public DbSet<TransactionSplitItem> TransactionSplitItems => Set<TransactionSplitItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

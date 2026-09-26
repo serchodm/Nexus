@@ -80,4 +80,34 @@ public sealed class BankTransactionRepository : IBankTransactionRepository
 
         return (items, totalCount);
     }
+
+    public async Task<BankTransaction?> GetByIdWithSplitsAsync(Guid transactionId, CancellationToken ct = default)
+    {
+        return await _context.BankTransactions
+            .Include(t => t.Category)
+            .Include(t => t.Subcategory)
+            .Include(t => t.SplitItems)
+                .ThenInclude(s => s.Category)
+            .Include(t => t.SplitItems)
+                .ThenInclude(s => s.Subcategory)
+            .FirstOrDefaultAsync(t => t.Id == transactionId, ct);
+    }
+
+    public async Task<List<BankTransaction>> GetAutoCategorizedOrUncategorizedByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return await _context.BankTransactions
+            .Include(t => t.BankAccount)
+            .Where(t => t.BankAccount.UserId == userId && !t.IsManual)
+            .ToListAsync(ct);
+    }
+
+    public void Update(BankTransaction transaction)
+    {
+        _context.BankTransactions.Update(transaction);
+    }
+
+    public void UpdateRange(IEnumerable<BankTransaction> transactions)
+    {
+        _context.BankTransactions.UpdateRange(transactions);
+    }
 }

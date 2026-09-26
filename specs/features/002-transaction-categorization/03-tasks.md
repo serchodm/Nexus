@@ -29,22 +29,22 @@
   - *Criterio de verificación*: 43/43 tests unitarios superados al 100% en `Nexus.UnitTests`.
 
 ### Fase 2: Infraestructura y Persistencia (`Nexus.Infrastructure`)
-- [ ] **Tarea 2.1**: Configuraciones de Entidad EF Core (Fluent API) con `snake_case`:
+- [x] **Tarea 2.1**: Configuraciones de Entidad EF Core (Fluent API) con `snake_case`:
   - `CategoryConfiguration`: Tabla `categories`, auto-referencia `parent_category_id`, FK opcional a `users`, índice condicional único `(user_id, parent_category_id, normalized_name)` con filtro `is_deleted = false`.
   - `CategorizationRuleConfiguration`: Tabla `categorization_rules`, FK a `users` y `categories`, índice en `(user_id, is_active, priority)`.
   - `TransactionSplitItemConfiguration`: Tabla `transaction_split_items`, FK con cascade delete a `bank_transactions`, precisión decimal `(18,2)`.
   - Actualizar `BankTransactionConfiguration` con los nuevos campos, FK a categorías con `OnDelete(SetNull)` e índices estratégicos.
   - Actualizar `ApplicationDbContext` con `DbSet<Category>`, `DbSet<CategorizationRule>`, `DbSet<TransactionSplitItem>`.
-- [ ] **Tarea 2.2**: Catálogo Semilla de Categorías del Sistema (Seed Data):
-  - Definir las 8 categorías padre y sus correspondientes subcategorías con Guids fijos deterministas, iconos y colores HSL.
-- [ ] **Tarea 2.3**: Repositorios de Infraestructura:
+- [x] **Tarea 2.2**: Catálogo Semilla de Categorías del Sistema (Seed Data):
+  - Definir las 8 categorías padre y sus correspondientes subcategorías con Guids fijos deterministas, iconos y colores HSL (40 categorías iniciales).
+- [x] **Tarea 2.3**: Repositorios de Infraestructura:
   - Implementar `CategoryRepository` (árbol jerárquico unificado sistema + usuario).
   - Implementar `CategorizationRuleRepository` (búsqueda y ordenación por prioridad).
   - Extender `BankTransactionRepository` con soporte para splits (`GetByIdWithSplitsAsync`) y actualización en lote para reglas retroactivas.
-- [ ] **Tarea 2.4**: Migración EF Core y Actualización de Base de Datos:
-  - Generar migración: `dotnet ef migrations add 20260927_AddTransactionCategorizationAndSplits`
+- [x] **Tarea 2.4**: Migración EF Core y Actualización de Base de Datos:
+  - Generar migración: `20260927_AddTransactionCategorizationAndSplits`
   - Aplicar migración en base de datos PostgreSQL: `dotnet ef database update`
-  - *Criterio de verificación*: Tablas `categories`, `categorization_rules`, `transaction_split_items` creadas e índices verificados en PostgreSQL.
+  - *Criterio de verificación*: Tablas `categories`, `categorization_rules`, `transaction_split_items` creadas e índices y 40 categorías del sistema verificadas en PostgreSQL.
 
 ### Fase 3: Capa de Aplicación (`Nexus.Application`)
 - [ ] **Tarea 3.1**: DTOs y Mappings:

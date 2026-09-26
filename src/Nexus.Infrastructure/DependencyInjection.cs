@@ -42,6 +42,8 @@ public static class DependencyInjection
         services.AddScoped<IBankAccountRepository, BankAccountRepository>();
         services.AddScoped<IStatementImportRepository, StatementImportRepository>();
         services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ICategorizationRuleRepository, CategorizationRuleRepository>();
 
         // Servicios de Seguridad y Autenticación (Fase 3)
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
