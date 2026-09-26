@@ -11,22 +11,22 @@
 ## Checklist de Progreso
 
 ### Fase 1: Dominio (`Nexus.Domain`)
-- [ ] **Tarea 1.1**: Enums de Dominio Financiero:
+- [x] **Tarea 1.1**: Enums de Dominio Financiero:
   - Crear `FlowType`, `ExpenseNature`, `ExpenseFlexibility`, `RecurrencePeriod`, `CategorizationSource`, `RuleMatchType`, `ExternalPlatform` en `Nexus.Domain/Enums/`.
   - *Criterio de verificación*: Archivos en `Nexus.Domain/Enums/`, compilación limpia.
-- [ ] **Tarea 1.2**: Entidades de Dominio:
+- [x] **Tarea 1.2**: Entidades de Dominio:
   - Crear entidad `Category` (auto-referenciada para Padre/Hijas, icono, color HSL, `FlowType`, `DefaultExpenseNature`).
   - Crear entidad `CategorizationRule` (patrón normalizado, tipo de concordancia, prioridad, categoría destino y flags de recurrencia/naturaleza).
   - Crear entidad `TransactionSplitItem` (FK a `BankTransaction`, FK a `Category`, importe, descripción y `ExpenseNature`).
   - Modificar `BankTransaction` para incluir los nuevos campos de enriquecimiento (`CleanMerchantName`, `CategoryId`, `SubcategoryId`, `CategorizationSource`, `IsManual`, `IsRecurring`, `RecurrencePeriod`, `ExpenseFlexibility`, `ExpenseNature`, `ExternalPlatform`, `PendingPlatformEnrichment`, `HasSplits`, `SplitItems`).
   - *Criterio de verificación*: Entidades compilan sin errores en `Nexus.Domain`.
-- [ ] **Tarea 1.3**: Servicios Puros y Validadores de Dominio:
+- [x] **Tarea 1.3**: Servicios Puros y Validadores de Dominio:
   - `MerchantNormalizer`: Extractor y normalizador de texto limpio eliminando prefijos de TPV, pasarelas (`TPV`, `SUMUP`, `PAYPAL`, `STRIPE`, `REDYS`), fechas, códigos postales y sufijos societarios (`S.A.`, `S.L.`).
   - `BizumConceptClassifier`: Clasificador semántico de conceptos de Bizum (`"cena"`, `"pádel"`, `"gasolina"`, etc.).
   - `TransactionSplitValidator`: Validador estricto de la invariante contable $\sum \text{SplitItems.Amount} == \text{Transaction.Amount}$ con tolerancia 0.00 €.
   - `CategorizationEngine`: Algoritmo en cascada que implementa la prevalencia **RN-01** (Manual > Regla Usuario > Nativa Banco > Regla Sistema > Bizum).
   - Interfaces de Repositorio: `ICategoryRepository` e `ICategorizationRuleRepository`.
-  - *Criterio de verificación*: Servicios puros probados y desacoplados de infraestructura.
+  - *Criterio de verificación*: 43/43 tests unitarios superados al 100% en `Nexus.UnitTests`.
 
 ### Fase 2: Infraestructura y Persistencia (`Nexus.Infrastructure`)
 - [ ] **Tarea 2.1**: Configuraciones de Entidad EF Core (Fluent API) con `snake_case`:

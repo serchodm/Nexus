@@ -19,4 +19,6 @@ public class User : BaseEntity, IUser
 
     // Navegación
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
+    public ICollection<CategorizationRule> CategorizationRules { get; set; } = new List<CategorizationRule>();
 }

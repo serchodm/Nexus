@@ -15,4 +15,8 @@ public interface IBankTransactionRepository
         DateOnly? fromDate = null, 
         DateOnly? toDate = null, 
         CancellationToken ct = default);
+    Task<BankTransaction?> GetByIdWithSplitsAsync(Guid transactionId, CancellationToken ct = default);
+    Task<List<BankTransaction>> GetAutoCategorizedOrUncategorizedByUserIdAsync(Guid userId, CancellationToken ct = default);
+    void Update(BankTransaction transaction);
+    void UpdateRange(IEnumerable<BankTransaction> transactions);
 }

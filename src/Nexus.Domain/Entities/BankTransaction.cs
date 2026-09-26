@@ -29,4 +29,27 @@ public class BankTransaction : BaseEntity, IBankTransaction
 
     // Deduplicación determinista: SHA256(AccountId + Date + Amount + NormalizedDesc + BalanceAfter)
     public string Fingerprint { get; set; } = string.Empty;
+
+    // --- Enriquecimiento Feature 002: Categorización e Inteligencia Financiera ---
+    public string? CleanMerchantName { get; set; }
+
+    public Guid? CategoryId { get; set; }
+    public Category? Category { get; set; }
+
+    public Guid? SubcategoryId { get; set; }
+    public Category? Subcategory { get; set; }
+
+    public Enums.CategorizationSource CategorizationSource { get; set; } = Enums.CategorizationSource.None;
+    public bool IsManual { get; set; } = false; // RN-01: Inmutable contra reglas si es true
+
+    public bool IsRecurring { get; set; } = false;
+    public Enums.RecurrencePeriod RecurrencePeriod { get; set; } = Enums.RecurrencePeriod.None;
+    public Enums.ExpenseFlexibility ExpenseFlexibility { get; set; } = Enums.ExpenseFlexibility.Discretionary;
+    public Enums.ExpenseNature ExpenseNature { get; set; } = Enums.ExpenseNature.Individual;
+
+    public Enums.ExternalPlatform ExternalPlatform { get; set; } = Enums.ExternalPlatform.None;
+    public bool PendingPlatformEnrichment { get; set; } = false;
+
+    public bool HasSplits { get; set; } = false;
+    public ICollection<TransactionSplitItem> SplitItems { get; set; } = new List<TransactionSplitItem>();
 }
