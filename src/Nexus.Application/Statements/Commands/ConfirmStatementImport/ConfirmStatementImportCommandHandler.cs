@@ -13,6 +13,8 @@ public class ConfirmStatementImportCommandHandler
     private readonly IBankAccountRepository _accountRepository;
     private readonly IStatementImportRepository _importRepository;
     private readonly IBankTransactionRepository _transactionRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategorizationRuleRepository _ruleRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMemoryCache _cache;
 
@@ -20,12 +22,16 @@ public class ConfirmStatementImportCommandHandler
         IBankAccountRepository accountRepository,
         IStatementImportRepository importRepository,
         IBankTransactionRepository transactionRepository,
+        ICategoryRepository categoryRepository,
+        ICategorizationRuleRepository ruleRepository,
         IUnitOfWork unitOfWork,
         IMemoryCache cache)
     {
         _accountRepository = accountRepository;
         _importRepository = importRepository;
         _transactionRepository = transactionRepository;
+        _categoryRepository = categoryRepository;
+        _ruleRepository = ruleRepository;
         _unitOfWork = unitOfWork;
         _cache = cache;
     }
@@ -98,6 +104,10 @@ public class ConfirmStatementImportCommandHandler
         var seenInBatch = new HashSet<string>();
         var skippedDuplicates = 0;
 
+        // Cargar reglas activas del usuario y lookup del sistema para auto-categorización
+        var userRules = await _ruleRepository.GetActiveRulesByUserIdAsync(cmd.UserId, ct);
+        var categoryLookup = await _categoryRepository.GetCategoryLookupAsync(cmd.UserId, ct);
+
         foreach (var item in transactionsWithFingerprint)
         {
             if (existingSet.Contains(item.Fingerprint) || seenInBatch.Contains(item.Fingerprint))
@@ -108,7 +118,10 @@ public class ConfirmStatementImportCommandHandler
 
             seenInBatch.Add(item.Fingerprint);
 
-            toInsert.Add(new BankTransaction
+            var cleanMerchant = MerchantNormalizer.Normalize(item.Raw.Description);
+            var (platform, pendingEnrichment) = ExternalPlatformDetector.Detect(item.Raw.Description, item.Raw.BankMovementType);
+
+            var candidateTx = new BankTransaction
             {
                 BankAccountId = cmd.BankAccountId,
                 StatementImportId = import.Id,
@@ -123,8 +136,23 @@ public class ConfirmStatementImportCommandHandler
                 BankMovementType = item.Raw.BankMovementType,
                 Observations = item.Raw.Observations,
                 RawDataJson = item.Raw.RawDataJson,
-                Fingerprint = item.Fingerprint
-            });
+                Fingerprint = item.Fingerprint,
+                CleanMerchantName = cleanMerchant,
+                ExternalPlatform = platform,
+                PendingPlatformEnrichment = pendingEnrichment
+            };
+
+            var eval = CategorizationEngine.Evaluate(candidateTx, cleanMerchant, userRules, categoryLookup);
+            candidateTx.CategoryId = eval.CategoryId;
+            candidateTx.SubcategoryId = eval.SubcategoryId;
+            candidateTx.CategorizationSource = eval.Source;
+            candidateTx.IsRecurring = eval.IsRecurring;
+            candidateTx.RecurrencePeriod = eval.RecurrencePeriod;
+            candidateTx.ExpenseFlexibility = eval.ExpenseFlexibility;
+            candidateTx.ExpenseNature = eval.ExpenseNature;
+            candidateTx.IsManual = false;
+
+            toInsert.Add(candidateTx);
         }
 
         import.ImportedRecords = toInsert.Count;

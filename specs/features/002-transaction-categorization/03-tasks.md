@@ -47,27 +47,28 @@
   - *Criterio de verificación*: Tablas `categories`, `categorization_rules`, `transaction_split_items` creadas e índices y 40 categorías del sistema verificadas en PostgreSQL.
 
 ### Fase 3: Capa de Aplicación (`Nexus.Application`)
-- [ ] **Tarea 3.1**: DTOs y Mappings:
-  - `CategoryDto`, `CategoryTreeDto`, `CategorizationRuleDto`, `SplitItemDto`, `SplitItemInput`, `TransactionDetailDto`, `TransactionFilterQuery`.
-- [ ] **Tarea 3.2**: Casos de Uso y Comandos de Categorías:
+- [x] **Tarea 3.1**: DTOs y Mappings:
+  - `CategoryDto`, `CategoryTreeDto`, `CategorizationRuleDto`, `SplitItemDto`, `SplitItemInput`, `TransactionDetailDto`, `TransactionsPagedResult`.
+- [x] **Tarea 3.2**: Casos de Uso y Comandos de Categorías:
   - `GetCategoryTreeQuery` & Handler.
   - `CreateCategoryCommand` & Handler.
   - `UpdateCategoryCommand` & Handler.
   - `DeleteCategoryCommand` & Handler.
-- [ ] **Tarea 3.3**: Casos de Uso y Comandos de Reglas:
+- [x] **Tarea 3.3**: Casos de Uso y Comandos de Reglas:
   - `GetRulesQuery` & Handler.
   - `CreateCategorizationRuleCommand` & Handler (con soporte de aplicación retroactiva).
   - `UpdateCategorizationRuleCommand` & Handler.
   - `DeleteCategorizationRuleCommand` & Handler.
   - `ApplyRulesRetroactiveCommand` & Handler (actualiza transacciones automáticas respetando `IsManual == false`).
-- [ ] **Tarea 3.4**: Casos de Uso de Transacciones:
+- [x] **Tarea 3.4**: Casos de Uso de Transacciones:
   - `CategorizeTransactionCommand` & Handler (asignación manual + toggle de auto-creación de regla).
   - `SplitTransactionCommand` & Handler (validación con `TransactionSplitValidator` y guardado atómico).
   - `ResetTransactionSplitsCommand` & Handler (eliminar splits y restaurar categoría única).
   - `GetTransactionsQuery` & Handler (consulta paginada con filtros avanzados de categoría, merchant, recurrencia, fechas, cuenta y splits).
-- [ ] **Tarea 3.5**: Integración en el Pipeline de Ingesta (`ConfirmStatementImportCommandHandler`):
+  - `GetTransactionByIdQuery` & Handler (detalle completo de transacción con partidas desglosadas).
+- [x] **Tarea 3.5**: Integración en el Pipeline de Ingesta (`ConfirmStatementImportCommandHandler`):
   - Invocar `MerchantNormalizer`, `ExternalPlatformDetector` y `CategorizationEngine` antes de persistir las transacciones del extracto.
-  - *Criterio de verificación*: `dotnet build` en `Nexus.Application` con 0 errores.
+  - *Criterio de verificación*: `dotnet build` global y 47/47 tests unitarios pasando al 100%.
 
 ### Fase 4: Presentación API (`Nexus.Api`)
 - [ ] **Tarea 4.1**: Endpoints de Categorías (FastEndpoints):

@@ -32,6 +32,24 @@ public static class DependencyInjection
         services.AddScoped<Nexus.Application.Statements.Queries.GetBankAccounts.GetBankAccountsQueryHandler>();
         services.AddScoped<Nexus.Application.Statements.Queries.GetAccountTransactions.GetAccountTransactionsQueryHandler>();
 
+        // Casos de uso de categorización, reglas y desglose de gastos (002-transaction-categorization)
+        services.AddScoped<Nexus.Application.Categories.Queries.GetCategoryTree.GetCategoryTreeQueryHandler>();
+        services.AddScoped<Nexus.Application.Categories.Commands.CreateCategory.CreateCategoryCommandHandler>();
+        services.AddScoped<Nexus.Application.Categories.Commands.UpdateCategory.UpdateCategoryCommandHandler>();
+        services.AddScoped<Nexus.Application.Categories.Commands.DeleteCategory.DeleteCategoryCommandHandler>();
+
+        services.AddScoped<Nexus.Application.Rules.Queries.GetRules.GetRulesQueryHandler>();
+        services.AddScoped<Nexus.Application.Rules.Commands.CreateCategorizationRule.CreateCategorizationRuleCommandHandler>();
+        services.AddScoped<Nexus.Application.Rules.Commands.UpdateCategorizationRule.UpdateCategorizationRuleCommandHandler>();
+        services.AddScoped<Nexus.Application.Rules.Commands.DeleteCategorizationRule.DeleteCategorizationRuleCommandHandler>();
+        services.AddScoped<Nexus.Application.Rules.Commands.ApplyRulesRetroactive.ApplyRulesRetroactiveCommandHandler>();
+
+        services.AddScoped<Nexus.Application.Transactions.Queries.GetTransactions.GetTransactionsQueryHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Queries.GetTransactionById.GetTransactionByIdQueryHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Commands.CategorizeTransaction.CategorizeTransactionCommandHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Commands.SplitTransaction.SplitTransactionCommandHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Commands.ResetTransactionSplits.ResetTransactionSplitsCommandHandler>();
+
         return services;
     }
 }

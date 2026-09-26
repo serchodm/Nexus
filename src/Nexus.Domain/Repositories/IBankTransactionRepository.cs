@@ -15,6 +15,20 @@ public interface IBankTransactionRepository
         DateOnly? fromDate = null, 
         DateOnly? toDate = null, 
         CancellationToken ct = default);
+    Task<(List<BankTransaction> Items, int TotalCount)> SearchTransactionsAsync(
+        Guid userId,
+        Guid? bankAccountId = null,
+        Guid? categoryId = null,
+        Guid? subcategoryId = null,
+        string? searchTerm = null,
+        DateOnly? fromDate = null,
+        DateOnly? toDate = null,
+        bool? isRecurring = null,
+        bool? hasSplits = null,
+        Enums.ExpenseNature? expenseNature = null,
+        int page = 1,
+        int pageSize = 50,
+        CancellationToken ct = default);
     Task<BankTransaction?> GetByIdWithSplitsAsync(Guid transactionId, CancellationToken ct = default);
     Task<List<BankTransaction>> GetAutoCategorizedOrUncategorizedByUserIdAsync(Guid userId, CancellationToken ct = default);
     void Update(BankTransaction transaction);
