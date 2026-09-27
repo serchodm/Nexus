@@ -31,6 +31,7 @@ public interface IBankTransactionRepository
         CancellationToken ct = default);
     Task<BankTransaction?> GetByIdWithSplitsAsync(Guid transactionId, CancellationToken ct = default);
     Task<List<BankTransaction>> GetAutoCategorizedOrUncategorizedByUserIdAsync(Guid userId, CancellationToken ct = default);
+    Task ReplaceSplitsAsync(Guid transactionId, IEnumerable<TransactionSplitItem> splitItems, CancellationToken ct = default);
     void Update(BankTransaction transaction);
     void UpdateRange(IEnumerable<BankTransaction> transactions);
 }

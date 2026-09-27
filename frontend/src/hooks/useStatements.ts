@@ -47,6 +47,7 @@ export function useStatements(accountId?: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
       if (accountId) {
         queryClient.invalidateQueries({ queryKey: ['transactions', accountId] });
       }

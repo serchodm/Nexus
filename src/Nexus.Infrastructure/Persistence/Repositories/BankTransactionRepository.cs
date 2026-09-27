@@ -170,7 +170,7 @@ public sealed class BankTransactionRepository : IBankTransactionRepository
 
     public async Task<BankTransaction?> GetByIdWithSplitsAsync(Guid transactionId, CancellationToken ct = default)
     {
-        return await _context.BankTransactions
+        var tx = await _context.BankTransactions
             .Include(t => t.Category)
             .Include(t => t.Subcategory)
             .Include(t => t.SplitItems)
@@ -178,6 +178,18 @@ public sealed class BankTransactionRepository : IBankTransactionRepository
             .Include(t => t.SplitItems)
                 .ThenInclude(s => s.Subcategory)
             .FirstOrDefaultAsync(t => t.Id == transactionId, ct);
+
+        if (tx != null)
+        {
+            await _context.Entry(tx)
+                .Collection(t => t.SplitItems)
+                .Query()
+                .Include(s => s.Category)
+                .Include(s => s.Subcategory)
+                .LoadAsync(ct);
+        }
+
+        return tx;
     }
 
     public async Task<List<BankTransaction>> GetAutoCategorizedOrUncategorizedByUserIdAsync(Guid userId, CancellationToken ct = default)
@@ -186,6 +198,21 @@ public sealed class BankTransactionRepository : IBankTransactionRepository
             .Include(t => t.BankAccount)
             .Where(t => t.BankAccount.UserId == userId && !t.IsManual)
             .ToListAsync(ct);
+    }
+
+    public async Task ReplaceSplitsAsync(Guid transactionId, IEnumerable<TransactionSplitItem> splitItems, CancellationToken ct = default)
+    {
+        var existingSplits = await _context.TransactionSplitItems
+            .Where(s => s.BankTransactionId == transactionId)
+            .ToListAsync(ct);
+
+        _context.TransactionSplitItems.RemoveRange(existingSplits);
+
+        var itemsList = splitItems.ToList();
+        if (itemsList.Count > 0)
+        {
+            await _context.TransactionSplitItems.AddRangeAsync(itemsList, ct);
+        }
     }
 
     public void Update(BankTransaction transaction)

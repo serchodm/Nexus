@@ -196,6 +196,19 @@ public class FakeBankTransactionRepository : IBankTransactionRepository
         return Task.FromResult(Transactions.Values.Where(t => !t.IsManual).ToList());
     }
 
+    public Task ReplaceSplitsAsync(Guid transactionId, IEnumerable<TransactionSplitItem> splitItems, CancellationToken ct = default)
+    {
+        if (Transactions.TryGetValue(transactionId, out var tx))
+        {
+            tx.SplitItems.Clear();
+            foreach (var item in splitItems)
+            {
+                tx.SplitItems.Add(item);
+            }
+        }
+        return Task.CompletedTask;
+    }
+
     public void Update(BankTransaction transaction)
     {
         Transactions[transaction.Id] = transaction;

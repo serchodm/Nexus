@@ -29,7 +29,8 @@ public sealed class CategorizeTransactionEndpoint : Endpoint<CategorizeTransacti
 
     public override void Configure()
     {
-        Patch("/transactions/{id}/categorize");
+        Verbs(Http.PATCH, Http.PUT, Http.POST);
+        Routes("/transactions/{id}/categorize");
         Summary(s =>
         {
             s.Summary = "Categoriza manualmente una transacción";

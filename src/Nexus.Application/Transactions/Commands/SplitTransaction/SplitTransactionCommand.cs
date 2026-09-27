@@ -81,25 +81,21 @@ public class SplitTransactionCommandHandler
         }
 
         // 3. Reemplazar partidas anteriores (si existían)
-        tx.SplitItems.Clear();
-
-        foreach (var item in cmd.Items)
+        var newSplits = cmd.Items.Select(item => new TransactionSplitItem
         {
-            tx.SplitItems.Add(new TransactionSplitItem
-            {
-                BankTransactionId = tx.Id,
-                CategoryId = item.CategoryId,
-                SubcategoryId = item.SubcategoryId,
-                Amount = item.Amount,
-                Description = string.IsNullOrWhiteSpace(item.Description) ? null : item.Description.Trim(),
-                ExpenseNature = item.ExpenseNature
-            });
-        }
+            BankTransactionId = tx.Id,
+            CategoryId = item.CategoryId,
+            SubcategoryId = item.SubcategoryId,
+            Amount = item.Amount,
+            Description = string.IsNullOrWhiteSpace(item.Description) ? null : item.Description.Trim(),
+            ExpenseNature = item.ExpenseNature
+        });
+
+        await _transactionRepository.ReplaceSplitsAsync(tx.Id, newSplits, ct);
 
         tx.HasSplits = true;
         tx.IsManual = true;
 
-        _transactionRepository.Update(tx);
         await _unitOfWork.SaveChangesAsync(ct);
 
         // 4. Recargar y mapear

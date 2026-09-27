@@ -1,6 +1,7 @@
 using Nexus.Application.Transactions.DTOs;
 using Nexus.Application.Transactions.Queries.GetTransactions;
 using Nexus.Domain.Common;
+using Nexus.Domain.Entities;
 using Nexus.Domain.Repositories;
 
 namespace Nexus.Application.Transactions.Commands.ResetTransactionSplits;
@@ -37,10 +38,9 @@ public class ResetTransactionSplitsCommandHandler
             throw new DomainValidationException("No tienes acceso a la cuenta de esta transacción.");
         }
 
-        tx.SplitItems.Clear();
+        await _transactionRepository.ReplaceSplitsAsync(tx.Id, Enumerable.Empty<TransactionSplitItem>(), ct);
         tx.HasSplits = false;
 
-        _transactionRepository.Update(tx);
         await _unitOfWork.SaveChangesAsync(ct);
 
         var updated = await _transactionRepository.GetByIdWithSplitsAsync(cmd.TransactionId, ct);

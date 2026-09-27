@@ -100,7 +100,6 @@ public class CategorizeTransactionCommandHandler
             tx.CleanMerchantName = MerchantNormalizer.Normalize(tx.Description);
         }
 
-        _transactionRepository.Update(tx);
         await _unitOfWork.SaveChangesAsync(ct);
 
         // Si el usuario solicitó crear una regla para el comercio:
