@@ -22,7 +22,10 @@ public static class StatementTableReader
 
         if (ext is ".xlsx" or ".xls")
         {
-            using var reader = ExcelReaderFactory.CreateReader(stream);
+            using var reader = ExcelReaderFactory.CreateReader(stream, new ExcelReaderConfiguration
+            {
+                LeaveOpen = true
+            });
             while (reader.Read())
             {
                 var colCount = reader.FieldCount;

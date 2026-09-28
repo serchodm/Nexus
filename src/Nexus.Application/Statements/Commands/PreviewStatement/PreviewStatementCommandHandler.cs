@@ -52,10 +52,12 @@ public class PreviewStatementCommandHandler
         }
 
         // 4. Leer cabecera y resolver parser
-        using var readStream = new MemoryStream(fileBytes);
-        var headerLine = await StatementTableReader.ReadHeaderLineAsync(readStream, cmd.FileName, ct);
-        
-        readStream.Position = 0;
+        string headerLine;
+        using (var headerStream = new MemoryStream(fileBytes))
+        {
+            headerLine = await StatementTableReader.ReadHeaderLineAsync(headerStream, cmd.FileName, ct);
+        }
+
         IStatementParser parser;
         try
         {
@@ -66,12 +68,12 @@ public class PreviewStatementCommandHandler
             return new PreviewStatementResult(false, null, ex.Message);
         }
 
-        // 5. Parsear transacciones
-        readStream.Position = 0;
+        // 5. Parsear transacciones con stream fresco
         StatementParseResult parseResult;
         try
         {
-            parseResult = await parser.ParseAsync(readStream, cmd.FileName, ct);
+            using var parseStream = new MemoryStream(fileBytes);
+            parseResult = await parser.ParseAsync(parseStream, cmd.FileName, ct);
         }
         catch (Exception ex)
         {
