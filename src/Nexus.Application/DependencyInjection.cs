@@ -50,6 +50,17 @@ public static class DependencyInjection
         services.AddScoped<Nexus.Application.Transactions.Commands.SplitTransaction.SplitTransactionCommandHandler>();
         services.AddScoped<Nexus.Application.Transactions.Commands.ResetTransactionSplits.ResetTransactionSplitsCommandHandler>();
 
+        // Casos de uso de conectores de comercio y reconciliación (003-commerce-connectors-and-reconciliation)
+        services.AddScoped<Nexus.Application.Commerce.Commands.RunReconciliationCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.ImportAmazonOrderReportCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.ImportPayPalActivityCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.AcceptReconciliationCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.RejectReconciliationCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.ConnectPayPalCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Commands.SyncPayPalApiCommandHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Queries.GetPendingReconciliationsQueryHandler>();
+        services.AddScoped<Nexus.Application.Commerce.Queries.GetCommerceOrdersQueryHandler>();
+
         return services;
     }
 }

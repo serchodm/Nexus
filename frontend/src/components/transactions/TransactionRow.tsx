@@ -7,21 +7,27 @@ import {
   Layers, 
   ChevronDown, 
   ChevronUp, 
-  Edit3
+  Edit3,
+  Sparkles
 } from 'lucide-react';
 import { CategoryBadge } from '../categories/CategoryBadge';
 import type { TransactionDetail } from '../../types/transaction';
+import type { ReconciliationCandidate } from '../../types/commerce';
 
 interface TransactionRowProps {
   transaction: TransactionDetail;
   onOpenCategorize: (tx: TransactionDetail) => void;
   onOpenSplit: (tx: TransactionDetail) => void;
+  reconciliationCandidate?: ReconciliationCandidate;
+  onReviewReconciliation?: (candidate: ReconciliationCandidate) => void;
 }
 
 export const TransactionRow: React.FC<TransactionRowProps> = ({
   transaction: tx,
   onOpenCategorize,
   onOpenSplit,
+  reconciliationCandidate,
+  onReviewReconciliation,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -127,6 +133,33 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
                 <Users size={10} />
                 Compartido
               </span>
+            )}
+
+            {reconciliationCandidate && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReviewReconciliation?.(reconciliationCandidate);
+                }}
+                title={`Reconciliación disponible: ${reconciliationCandidate.matchReason}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  fontSize: '0.68rem',
+                  padding: '0.12rem 0.45rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'linear-gradient(135deg, hsla(38, 92%, 50%, 0.18) 0%, hsla(217, 91%, 60%, 0.18) 100%)',
+                  border: '1px solid hsla(38, 92%, 50%, 0.45)',
+                  color: '#fbbf24',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <Sparkles size={11} />
+                Desglosar pedido
+              </button>
             )}
           </div>
 

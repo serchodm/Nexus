@@ -6,12 +6,15 @@ import {
   Search, 
   Sliders, 
   Repeat, 
-  Layers 
+  Layers,
+  ShoppingBag,
+  Sparkles
 } from 'lucide-react';
 import { useAccounts } from '../../hooks/useAccounts';
 import { useStatements } from '../../hooks/useStatements';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
+import { useCommerce } from '../../hooks/useCommerce';
 import { AccountSelector } from './AccountSelector';
 import { StatementDropzone } from './StatementDropzone';
 import { StatementPreviewModal } from './StatementPreviewModal';
@@ -19,9 +22,12 @@ import { TransactionRow } from '../transactions/TransactionRow';
 import { SplitTransactionModal } from '../transactions/SplitTransactionModal';
 import { CategorizeModal } from '../transactions/CategorizeModal';
 import { RulesManagerModal } from '../rules/RulesManagerModal';
+import { CommerceIntegrationModal } from '../commerce/CommerceIntegrationModal';
+import { ReconciliationReviewModal } from '../commerce/ReconciliationReviewModal';
 import type { BankAccount } from '../../types/account';
 import type { StatementPreview } from '../../types/statement';
 import type { TransactionDetail, SplitItemInput, CategorizeTransactionRequest } from '../../types/transaction';
+import type { ReconciliationCandidate } from '../../types/commerce';
 
 export const StatementsManager: React.FC = () => {
   const { accounts, totalNetWorthShare, createAccount, isCreating } = useAccounts();
@@ -34,11 +40,18 @@ export const StatementsManager: React.FC = () => {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
   const [onlyRecurring, setOnlyRecurring] = useState<boolean | undefined>(undefined);
   const [onlySplits, setOnlySplits] = useState<boolean | undefined>(undefined);
+  const [onlyReconcilable, setOnlyReconcilable] = useState<boolean>(false);
 
   // Estados de modales
   const [splitTx, setSplitTx] = useState<TransactionDetail | null>(null);
   const [categorizeTx, setCategorizeTx] = useState<TransactionDetail | null>(null);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  const [isCommerceModalOpen, setIsCommerceModalOpen] = useState(false);
+  const [reviewCandidate, setReviewCandidate] = useState<ReconciliationCandidate | null>(null);
+
+  const {
+    reconciliations,
+  } = useCommerce();
 
   // Seleccionar automáticamente la primera cuenta disponible si aún no hay ninguna
   const activeAccount = selectedAccount ?? accounts[0];
@@ -71,6 +84,10 @@ export const StatementsManager: React.FC = () => {
     hasSplits: onlySplits,
     pageSize: 100,
   });
+
+  const displayedTransactions = onlyReconcilable
+    ? transactions.filter((tx) => reconciliations.some((r) => r.bankTransactionId === tx.id))
+    : transactions;
 
   const handleFileSelect = async (file: File) => {
     if (!activeAccount) return;
@@ -168,14 +185,48 @@ export const StatementsManager: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => setIsRulesModalOpen(true)}
-          className="btn-secondary"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.85rem' }}
-        >
-          <Sliders size={16} />
-          Reglas & Automatización
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
+            onClick={() => setIsCommerceModalOpen(true)}
+            className="btn-secondary"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.85rem',
+              position: 'relative',
+              borderColor: reconciliations.length > 0 ? 'hsla(38, 92%, 50%, 0.5)' : undefined,
+            }}
+          >
+            <ShoppingBag size={16} color={reconciliations.length > 0 ? '#fbbf24' : 'currentColor'} />
+            <span>Amazon & PayPal</span>
+            {reconciliations.length > 0 && (
+              <span
+                title={`${reconciliations.length} pedidos listos para reconciliar`}
+                style={{
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%)',
+                  color: '#ffffff',
+                  borderRadius: '9999px',
+                  padding: '0.1rem 0.5rem',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                }}
+              >
+                {reconciliations.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setIsRulesModalOpen(true)}
+            className="btn-secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.85rem' }}
+          >
+            <Sliders size={16} />
+            Reglas & Automatización
+          </button>
+        </div>
       </div>
 
       {/* Banner de Éxito / Feedback */}
@@ -287,6 +338,23 @@ export const StatementsManager: React.FC = () => {
         <RulesManagerModal
           categories={categoriesTree}
           onClose={() => setIsRulesModalOpen(false)}
+        />
+      )}
+
+      {/* Modales de Slice 003: Commerce & Reconciliación */}
+      <CommerceIntegrationModal
+        isOpen={isCommerceModalOpen}
+        onClose={() => setIsCommerceModalOpen(false)}
+      />
+
+      {reviewCandidate && (
+        <ReconciliationReviewModal
+          isOpen={!!reviewCandidate}
+          candidate={reviewCandidate}
+          onClose={() => setReviewCandidate(null)}
+          onReconciliationAccepted={() => {
+            setSuccessBanner('¡Pedido reconciliado con éxito! Se desglosó el movimiento contable respetando los artículos del pedido.');
+          }}
         />
       )}
 
@@ -405,6 +473,42 @@ export const StatementsManager: React.FC = () => {
                 <Layers size={13} />
                 Solo Splits
               </button>
+
+              {/* Filtro Reconciliables */}
+              <button
+                type="button"
+                onClick={() => setOnlyReconcilable(!onlyReconcilable)}
+                style={{
+                  padding: '0.45rem 0.75rem',
+                  borderRadius: 'var(--radius-md)',
+                  background: onlyReconcilable ? 'hsla(38, 92%, 50%, 0.2)' : 'var(--bg-app)',
+                  border: `1px solid ${onlyReconcilable ? 'hsla(38, 92%, 50%, 0.5)' : 'var(--border-subtle)'}`,
+                  color: onlyReconcilable ? '#fbbf24' : 'var(--text-dim)',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                }}
+              >
+                <Sparkles size={13} />
+                <span>Reconciliables</span>
+                {reconciliations.length > 0 && (
+                  <span
+                    style={{
+                      background: 'hsla(38, 92%, 50%, 0.3)',
+                      color: '#fbbf24',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '0.05rem 0.35rem',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {reconciliations.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
@@ -431,14 +535,19 @@ export const StatementsManager: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((tx) => (
-                    <TransactionRow
-                      key={tx.id}
-                      transaction={tx}
-                      onOpenCategorize={(item) => setCategorizeTx(item)}
-                      onOpenSplit={(item) => setSplitTx(item)}
-                    />
-                  ))}
+                  {displayedTransactions.map((tx) => {
+                    const candidate = reconciliations.find((r) => r.bankTransactionId === tx.id);
+                    return (
+                      <TransactionRow
+                        key={tx.id}
+                        transaction={tx}
+                        onOpenCategorize={(item) => setCategorizeTx(item)}
+                        onOpenSplit={(item) => setSplitTx(item)}
+                        reconciliationCandidate={candidate}
+                        onReviewReconciliation={(cand) => setReviewCandidate(cand)}
+                      />
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

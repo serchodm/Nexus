@@ -1093,6 +1093,262 @@ namespace Nexus.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceConnection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AccountEmail")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("account_email");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("EncryptedAccessToken")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_access_token");
+
+                    b.Property<string>("EncryptedRefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_refresh_token");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("LastSyncAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_sync_at");
+
+                    b.Property<string>("LastSyncStatus")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("last_sync_status");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("integer")
+                        .HasColumnName("provider");
+
+                    b.Property<DateTime?>("TokenExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("token_expires_at");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_external_commerce_connections");
+
+                    b.HasIndex("UserId", "Provider")
+                        .IsUnique()
+                        .HasDatabaseName("ix_commerce_connections_user_provider");
+
+                    b.ToTable("external_commerce_connections", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CounterpartyName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("counterparty_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasDefaultValue("EUR")
+                        .HasColumnName("currency");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("ExternalOrderId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("external_order_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsFullyReconciled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_fully_reconciled");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("order_date");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("integer")
+                        .HasColumnName("provider");
+
+                    b.Property<string>("RawDataJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("raw_data_json");
+
+                    b.Property<decimal>("RefundAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("refund_amount");
+
+                    b.Property<DateTime?>("ShipmentDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("shipment_date");
+
+                    b.Property<decimal>("ShippingFee")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("shipping_fee");
+
+                    b.Property<decimal>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("tax_amount");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("total_amount");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_external_commerce_orders");
+
+                    b.HasIndex("UserId", "OrderDate")
+                        .HasDatabaseName("ix_external_commerce_orders_user_date");
+
+                    b.HasIndex("UserId", "Provider", "ExternalOrderId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_external_commerce_orders_unique");
+
+                    b.ToTable("external_commerce_orders", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceOrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("BankTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bank_transaction_id");
+
+                    b.Property<string>("CategoryHint")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("category_hint");
+
+                    b.Property<string>("Condition")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("condition");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid>("ExternalCommerceOrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("external_commerce_order_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("title");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("total_price");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("unit_price");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_external_commerce_order_items");
+
+                    b.HasIndex("BankTransactionId")
+                        .HasDatabaseName("ix_external_commerce_items_tx_id");
+
+                    b.HasIndex("ExternalCommerceOrderId")
+                        .HasDatabaseName("ix_external_commerce_items_order_id");
+
+                    b.ToTable("external_commerce_order_items", (string)null);
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1245,6 +1501,83 @@ namespace Nexus.Infrastructure.Migrations
                         .HasFilter("is_deleted = false");
 
                     b.ToTable("statement_imports", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.TransactionReconciliation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("AppliedAsSplits")
+                        .HasColumnType("boolean")
+                        .HasColumnName("applied_as_splits");
+
+                    b.Property<Guid>("BankTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bank_transaction_id");
+
+                    b.Property<int>("Confidence")
+                        .HasColumnType("integer")
+                        .HasColumnName("confidence");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid>("ExternalCommerceOrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("external_commerce_order_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("MatchReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("match_reason");
+
+                    b.PrimitiveCollection<List<Guid>>("MatchedOrderItemIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]")
+                        .HasColumnName("matched_order_item_ids");
+
+                    b.Property<DateTime>("ReconciledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reconciled_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transaction_reconciliations");
+
+                    b.HasIndex("ExternalCommerceOrderId")
+                        .HasDatabaseName("ix_transaction_reconciliations_external_commerce_order_id");
+
+                    b.HasIndex("BankTransactionId", "ExternalCommerceOrderId")
+                        .HasDatabaseName("ix_reconciliations_tx_order");
+
+                    b.HasIndex("UserId", "Status")
+                        .HasDatabaseName("ix_reconciliations_user_status");
+
+                    b.ToTable("transaction_reconciliations", (string)null);
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.TransactionSplitItem", b =>
@@ -1490,6 +1823,50 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceConnection", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_external_commerce_connections_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceOrder", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_external_commerce_orders_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceOrderItem", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "BankTransaction")
+                        .WithMany()
+                        .HasForeignKey("BankTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_external_commerce_order_items_bank_transactions_bank_transa");
+
+                    b.HasOne("Nexus.Domain.Entities.ExternalCommerceOrder", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("ExternalCommerceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_external_commerce_order_items_external_commerce_orders_exte");
+
+                    b.Navigation("BankTransaction");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Nexus.Domain.Entities.User", "User")
@@ -1512,6 +1889,36 @@ namespace Nexus.Infrastructure.Migrations
                         .HasConstraintName("fk_statement_imports_bank_accounts_bank_account_id");
 
                     b.Navigation("BankAccount");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.TransactionReconciliation", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "BankTransaction")
+                        .WithMany()
+                        .HasForeignKey("BankTransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_reconciliations_bank_transactions_bank_transact");
+
+                    b.HasOne("Nexus.Domain.Entities.ExternalCommerceOrder", "ExternalCommerceOrder")
+                        .WithMany("Reconciliations")
+                        .HasForeignKey("ExternalCommerceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_reconciliations_external_commerce_orders_extern");
+
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_reconciliations_users_user_id");
+
+                    b.Navigation("BankTransaction");
+
+                    b.Navigation("ExternalCommerceOrder");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.TransactionSplitItem", b =>
@@ -1562,6 +1969,13 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("Subcategories");
 
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceOrder", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Reconciliations");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.StatementImport", b =>

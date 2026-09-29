@@ -219,3 +219,107 @@ public class FakeBankTransactionRepository : IBankTransactionRepository
         foreach (var t in transactions) Transactions[t.Id] = t;
     }
 }
+
+public class FakeExternalCommerceOrderRepository : IExternalCommerceOrderRepository
+{
+    public readonly Dictionary<Guid, ExternalCommerceOrder> Orders = new();
+
+    public Task<ExternalCommerceOrder?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        Orders.TryGetValue(id, out var o);
+        return Task.FromResult(o);
+    }
+
+    public Task<ExternalCommerceOrder?> GetByExternalIdAsync(Guid userId, Nexus.Domain.Enums.CommerceProvider provider, string externalOrderId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Orders.Values.FirstOrDefault(o => o.UserId == userId && o.Provider == provider && o.ExternalOrderId == externalOrderId));
+    }
+
+    public Task<List<ExternalCommerceOrder>> GetUnreconciledByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Orders.Values.Where(o => o.UserId == userId && !o.IsFullyReconciled).ToList());
+    }
+
+    public Task<List<ExternalCommerceOrder>> GetOrdersPagedAsync(Guid userId, Nexus.Domain.Enums.CommerceProvider? provider, int page, int pageSize, CancellationToken ct = default)
+    {
+        var q = Orders.Values.Where(o => o.UserId == userId);
+        if (provider.HasValue) q = q.Where(o => o.Provider == provider.Value);
+        return Task.FromResult(q.Skip((page - 1) * pageSize).Take(pageSize).ToList());
+    }
+
+    public Task AddAsync(ExternalCommerceOrder order, CancellationToken ct = default)
+    {
+        Orders[order.Id] = order;
+        return Task.CompletedTask;
+    }
+
+    public Task AddRangeAsync(IEnumerable<ExternalCommerceOrder> orders, CancellationToken ct = default)
+    {
+        foreach (var o in orders) Orders[o.Id] = o;
+        return Task.CompletedTask;
+    }
+
+    public void Update(ExternalCommerceOrder order)
+    {
+        Orders[order.Id] = order;
+    }
+}
+
+public class FakeTransactionReconciliationRepository : ITransactionReconciliationRepository
+{
+    public readonly Dictionary<Guid, TransactionReconciliation> Reconciliations = new();
+
+    public Task<TransactionReconciliation?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        Reconciliations.TryGetValue(id, out var r);
+        return Task.FromResult(r);
+    }
+
+    public Task<List<TransactionReconciliation>> GetPendingByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Reconciliations.Values.Where(r => r.UserId == userId && r.Status == Nexus.Domain.Enums.ReconciliationStatus.Candidate).ToList());
+    }
+
+    public Task<TransactionReconciliation?> GetByTransactionIdAsync(Guid bankTransactionId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Reconciliations.Values.FirstOrDefault(r => r.BankTransactionId == bankTransactionId));
+    }
+
+    public Task AddAsync(TransactionReconciliation reconciliation, CancellationToken ct = default)
+    {
+        Reconciliations[reconciliation.Id] = reconciliation;
+        return Task.CompletedTask;
+    }
+
+    public void Update(TransactionReconciliation reconciliation)
+    {
+        Reconciliations[reconciliation.Id] = reconciliation;
+    }
+}
+
+public class FakeExternalCommerceConnectionRepository : IExternalCommerceConnectionRepository
+{
+    public readonly Dictionary<Guid, ExternalCommerceConnection> Connections = new();
+
+    public Task<ExternalCommerceConnection?> GetByUserIdAndProviderAsync(Guid userId, Nexus.Domain.Enums.CommerceProvider provider, CancellationToken ct = default)
+    {
+        return Task.FromResult(Connections.Values.FirstOrDefault(c => c.UserId == userId && c.Provider == provider));
+    }
+
+    public Task<List<ExternalCommerceConnection>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Connections.Values.Where(c => c.UserId == userId).ToList());
+    }
+
+    public Task AddAsync(ExternalCommerceConnection connection, CancellationToken ct = default)
+    {
+        Connections[connection.Id] = connection;
+        return Task.CompletedTask;
+    }
+
+    public void Update(ExternalCommerceConnection connection)
+    {
+        Connections[connection.Id] = connection;
+    }
+}
+

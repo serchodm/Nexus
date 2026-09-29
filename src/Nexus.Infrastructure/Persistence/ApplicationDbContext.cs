@@ -19,6 +19,10 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<CategorizationRule> CategorizationRules => Set<CategorizationRule>();
     public DbSet<TransactionSplitItem> TransactionSplitItems => Set<TransactionSplitItem>();
+    public DbSet<ExternalCommerceOrder> ExternalCommerceOrders => Set<ExternalCommerceOrder>();
+    public DbSet<ExternalCommerceOrderItem> ExternalCommerceOrderItems => Set<ExternalCommerceOrderItem>();
+    public DbSet<TransactionReconciliation> TransactionReconciliations => Set<TransactionReconciliation>();
+    public DbSet<ExternalCommerceConnection> ExternalCommerceConnections => Set<ExternalCommerceConnection>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -44,12 +44,17 @@ public static class DependencyInjection
         services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ICategorizationRuleRepository, CategorizationRuleRepository>();
+        services.AddScoped<IExternalCommerceOrderRepository, ExternalCommerceOrderRepository>();
+        services.AddScoped<ITransactionReconciliationRepository, TransactionReconciliationRepository>();
+        services.AddScoped<IExternalCommerceConnectionRepository, ExternalCommerceConnectionRepository>();
 
         // Servicios de Seguridad y Autenticación (Fase 3)
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
         services.AddSingleton<ITotpService, TotpService>();
         services.AddSingleton<IJwtProvider, JwtProvider>();
+        services.AddSingleton<ISecretEncryptionService, AesGcmEncryptionService>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+        services.AddHttpClient<IPayPalApiClient, PayPalApiClient>();
 
         // Configuración de Autenticación JWT Bearer
         var jwtKey = configuration["Jwt:Key"] 
