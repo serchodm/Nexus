@@ -5,7 +5,9 @@ import type {
   TransactionsPagedResult, 
   TransactionsFilter, 
   CategorizeTransactionRequest, 
-  SplitTransactionRequest 
+  SplitTransactionRequest,
+  LinkTransactionRequest,
+  UpdateTransactionNatureRequest
 } from '../types/transaction';
 
 export function useTransactions(filter: TransactionsFilter = {}) {
@@ -75,6 +77,30 @@ export function useTransactions(filter: TransactionsFilter = {}) {
     },
   });
 
+  const linkMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: LinkTransactionRequest }) => {
+      return apiClient<TransactionDetail>(`/api/transactions/${id}/link`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+
+  const updateNatureMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateTransactionNatureRequest }) => {
+      return apiClient<TransactionDetail>(`/api/transactions/${id}/nature`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+
   return {
     transactions: transactionsQuery.data?.items ?? [],
     totalCount: transactionsQuery.data?.totalCount ?? 0,
@@ -89,5 +115,9 @@ export function useTransactions(filter: TransactionsFilter = {}) {
     isSplitting: splitMutation.isPending,
     resetSplits: resetSplitsMutation.mutateAsync,
     isResettingSplits: resetSplitsMutation.isPending,
+    linkTransaction: linkMutation.mutateAsync,
+    isLinking: linkMutation.isPending,
+    updateTransactionNature: updateNatureMutation.mutateAsync,
+    isUpdatingNature: updateNatureMutation.isPending,
   };
 }

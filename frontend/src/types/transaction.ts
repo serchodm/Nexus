@@ -52,6 +52,18 @@ export interface TransactionDetail {
   pendingPlatformEnrichment: boolean;
   hasSplits: boolean;
   splitItems: SplitItem[];
+  transactionNature?: TransactionNature;
+  linkedTransactionId?: string | null;
+}
+
+export type TransactionNature = 0 | 1 | 2 | 3; // 0=StandardExpense, 1=ExpenseReimbursement, 2=TrueIncome, 3=InternalTransfer
+
+export interface LinkTransactionRequest {
+  targetTransactionId: string;
+}
+
+export interface UpdateTransactionNatureRequest {
+  nature: TransactionNature;
 }
 
 export interface TransactionsPagedResult {

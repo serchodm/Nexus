@@ -150,6 +150,7 @@ public class ConfirmStatementImportCommandHandler
             candidateTx.RecurrencePeriod = eval.RecurrencePeriod;
             candidateTx.ExpenseFlexibility = eval.ExpenseFlexibility;
             candidateTx.ExpenseNature = eval.ExpenseNature;
+            candidateTx.TransactionNature = eval.TransactionNature;
             candidateTx.IsManual = false;
 
             toInsert.Add(candidateTx);

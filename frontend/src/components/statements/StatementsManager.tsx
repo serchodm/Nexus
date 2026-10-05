@@ -21,12 +21,13 @@ import { StatementPreviewModal } from './StatementPreviewModal';
 import { TransactionRow } from '../transactions/TransactionRow';
 import { SplitTransactionModal } from '../transactions/SplitTransactionModal';
 import { CategorizeModal } from '../transactions/CategorizeModal';
+import { LinkTransactionModal } from '../transactions/LinkTransactionModal';
 import { RulesManagerModal } from '../rules/RulesManagerModal';
 import { CommerceIntegrationModal } from '../commerce/CommerceIntegrationModal';
 import { ReconciliationReviewModal } from '../commerce/ReconciliationReviewModal';
 import type { BankAccount } from '../../types/account';
 import type { StatementPreview } from '../../types/statement';
-import type { TransactionDetail, SplitItemInput, CategorizeTransactionRequest } from '../../types/transaction';
+import type { TransactionDetail, SplitItemInput, CategorizeTransactionRequest, TransactionNature } from '../../types/transaction';
 import type { ReconciliationCandidate } from '../../types/commerce';
 
 export const StatementsManager: React.FC = () => {
@@ -45,6 +46,7 @@ export const StatementsManager: React.FC = () => {
   // Estados de modales
   const [splitTx, setSplitTx] = useState<TransactionDetail | null>(null);
   const [categorizeTx, setCategorizeTx] = useState<TransactionDetail | null>(null);
+  const [linkTx, setLinkTx] = useState<TransactionDetail | null>(null);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const [isCommerceModalOpen, setIsCommerceModalOpen] = useState(false);
   const [reviewCandidate, setReviewCandidate] = useState<ReconciliationCandidate | null>(null);
@@ -76,6 +78,9 @@ export const StatementsManager: React.FC = () => {
     isSplitting,
     resetSplits,
     isResettingSplits,
+    linkTransaction,
+    isLinking,
+    updateTransactionNature,
   } = useTransactions({
     bankAccountId: activeAccount?.id,
     searchTerm: searchTerm.trim() || undefined,
@@ -119,7 +124,6 @@ export const StatementsManager: React.FC = () => {
     }
   };
 
-
   const handleSaveSplit = async (items: SplitItemInput[]) => {
     if (!splitTx) return;
     await splitTransaction({
@@ -142,6 +146,24 @@ export const StatementsManager: React.FC = () => {
       data,
     });
     setSuccessBanner('Categorización manual aplicada con éxito.');
+  };
+
+  const handleLinkTransaction = async (targetId: string) => {
+    if (!linkTx) return;
+    await linkTransaction({
+      id: linkTx.id,
+      data: { targetTransactionId: targetId },
+    });
+    setSuccessBanner('Transacción vinculada como contrapartida con éxito.');
+  };
+
+  const handleUpdateNature = async (nature: TransactionNature) => {
+    if (!linkTx) return;
+    await updateTransactionNature({
+      id: linkTx.id,
+      data: { nature },
+    });
+    setSuccessBanner('Naturaleza contable de la transacción actualizada.');
   };
 
   return (
@@ -331,6 +353,17 @@ export const StatementsManager: React.FC = () => {
           onClose={() => setCategorizeTx(null)}
           onSave={handleSaveCategorize}
           isSaving={isCategorizing}
+        />
+      )}
+
+      {linkTx && (
+        <LinkTransactionModal
+          transaction={linkTx}
+          allTransactions={transactions}
+          onClose={() => setLinkTx(null)}
+          onLink={handleLinkTransaction}
+          onChangeNature={handleUpdateNature}
+          isLinking={isLinking}
         />
       )}
 
@@ -543,6 +576,7 @@ export const StatementsManager: React.FC = () => {
                         transaction={tx}
                         onOpenCategorize={(item) => setCategorizeTx(item)}
                         onOpenSplit={(item) => setSplitTx(item)}
+                        onOpenLink={(item) => setLinkTx(item)}
                         reconciliationCandidate={candidate}
                         onReviewReconciliation={(cand) => setReviewCandidate(cand)}
                       />

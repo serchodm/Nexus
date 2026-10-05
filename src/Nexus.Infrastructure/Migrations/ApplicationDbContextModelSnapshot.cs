@@ -244,6 +244,10 @@ namespace Nexus.Infrastructure.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_recurring");
 
+                    b.Property<Guid?>("LinkedTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("linked_transaction_id");
+
                     b.Property<string>("Observations")
                         .HasColumnType("text")
                         .HasColumnName("observations");
@@ -275,6 +279,12 @@ namespace Nexus.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("subcategory_id");
 
+                    b.Property<int>("TransactionNature")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("transaction_nature");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -288,6 +298,9 @@ namespace Nexus.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_bank_transactions_category_id");
+
+                    b.HasIndex("LinkedTransactionId")
+                        .HasDatabaseName("ix_bank_transactions_linked_transaction_id");
 
                     b.HasIndex("StatementImportId")
                         .HasDatabaseName("ix_bank_transactions_statement_import_id");
@@ -1753,6 +1766,12 @@ namespace Nexus.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_bank_transactions_categories_category_id");
 
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "LinkedTransaction")
+                        .WithMany()
+                        .HasForeignKey("LinkedTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_bank_transactions_bank_transactions_linked_transaction_id");
+
                     b.HasOne("Nexus.Domain.Entities.StatementImport", "StatementImport")
                         .WithMany("Transactions")
                         .HasForeignKey("StatementImportId")
@@ -1769,6 +1788,8 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("BankAccount");
 
                     b.Navigation("Category");
+
+                    b.Navigation("LinkedTransaction");
 
                     b.Navigation("StatementImport");
 

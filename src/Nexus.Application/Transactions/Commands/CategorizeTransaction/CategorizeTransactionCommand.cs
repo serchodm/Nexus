@@ -100,6 +100,20 @@ public class CategorizeTransactionCommandHandler
             tx.CleanMerchantName = MerchantNormalizer.Normalize(tx.Description);
         }
 
+        // Océano Azul: Ajustar TransactionNature si un abono se categoriza como gasto (contrapartida) o viceversa
+        if (category.FlowType == FlowType.Expense && tx.Amount > 0)
+        {
+            tx.TransactionNature = TransactionNature.ExpenseReimbursement;
+        }
+        else if (category.FlowType == FlowType.Income)
+        {
+            tx.TransactionNature = TransactionNature.TrueIncome;
+        }
+        else if (category.FlowType == FlowType.Transfer)
+        {
+            tx.TransactionNature = TransactionNature.InternalTransfer;
+        }
+
         await _unitOfWork.SaveChangesAsync(ct);
 
         // Si el usuario solicitó crear una regla para el comercio:

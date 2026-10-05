@@ -46,7 +46,9 @@ public record TransactionDetailDto(
     ExternalPlatform ExternalPlatform,
     bool PendingPlatformEnrichment,
     bool HasSplits,
-    List<SplitItemDto> SplitItems
+    List<SplitItemDto> SplitItems,
+    TransactionNature TransactionNature = TransactionNature.StandardExpense,
+    Guid? LinkedTransactionId = null
 );
 
 public record TransactionsPagedResult(

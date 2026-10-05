@@ -49,6 +49,8 @@ public static class DependencyInjection
         services.AddScoped<Nexus.Application.Transactions.Commands.CategorizeTransaction.CategorizeTransactionCommandHandler>();
         services.AddScoped<Nexus.Application.Transactions.Commands.SplitTransaction.SplitTransactionCommandHandler>();
         services.AddScoped<Nexus.Application.Transactions.Commands.ResetTransactionSplits.ResetTransactionSplitsCommandHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Commands.LinkTransaction.LinkTransactionCommandHandler>();
+        services.AddScoped<Nexus.Application.Transactions.Commands.UpdateTransactionNature.UpdateTransactionNatureCommandHandler>();
 
         // Casos de uso de conectores de comercio y reconciliación (003-commerce-connectors-and-reconciliation)
         services.AddScoped<Nexus.Application.Commerce.Commands.RunReconciliationCommandHandler>();

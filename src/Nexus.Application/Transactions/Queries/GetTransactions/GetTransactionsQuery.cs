@@ -93,7 +93,9 @@ public class GetTransactionsQueryHandler
                 s.Amount,
                 s.Description,
                 s.ExpenseNature
-            )).ToList()
+            )).ToList(),
+            tx.TransactionNature,
+            tx.LinkedTransactionId
         );
     }
 }

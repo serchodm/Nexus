@@ -100,6 +100,16 @@ public sealed class BankTransactionConfiguration : IEntityTypeConfiguration<Bank
             .HasForeignKey(x => x.StatementImportId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // --- Enriquecimiento Océano Azul: Contra-partidas y Traspasos Neutros ---
+        builder.Property(x => x.TransactionNature)
+            .IsRequired()
+            .HasDefaultValue(Domain.Enums.TransactionNature.StandardExpense);
+
+        builder.HasOne(x => x.LinkedTransaction)
+            .WithMany()
+            .HasForeignKey(x => x.LinkedTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Índices Estratégicos de Alto Rendimiento
         builder.HasIndex(x => new { x.BankAccountId, x.Fingerprint })
             .IsUnique()
@@ -117,6 +127,9 @@ public sealed class BankTransactionConfiguration : IEntityTypeConfiguration<Bank
 
         builder.HasIndex(x => new { x.BankAccountId, x.CleanMerchantName })
             .HasDatabaseName("ix_bank_transactions_account_clean_merchant");
+
+        builder.HasIndex(x => x.LinkedTransactionId)
+            .HasDatabaseName("ix_bank_transactions_linked_transaction_id");
 
         // Query filter global para soft-delete
         builder.HasQueryFilter(x => !x.IsDeleted);

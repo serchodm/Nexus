@@ -11,7 +11,8 @@ public static class BizumConceptClassifier
     public record BizumClassificationResult(
         string CategoryName,
         string SubcategoryName,
-        bool IsMatch
+        bool IsMatch,
+        Enums.TransactionNature SuggestedNature = Enums.TransactionNature.ExpenseReimbursement
     );
 
     // Diccionario de patrones léxicos
@@ -43,7 +44,7 @@ public static class BizumConceptClassifier
     ];
 
     /// <summary>
-    /// Evalúa el concepto de un Bizum para determinar su categoría semántica.
+    /// Evalúa el concepto de un Bizum para determinar su categoría semántica y naturaleza contable.
     /// </summary>
     public static BizumClassificationResult Classify(string? concept, string? observations = null)
     {
@@ -53,11 +54,11 @@ public static class BizumConceptClassifier
         {
             if (Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase))
             {
-                return new BizumClassificationResult(category, subcategory, true);
+                return new BizumClassificationResult(category, subcategory, true, Enums.TransactionNature.ExpenseReimbursement);
             }
         }
 
-        // Fallback genérico para transferencias/Bizum sin concepto identificable
-        return new BizumClassificationResult("Finanzas e Ingresos", "Transferencias Recibidas", false);
+        // Fallback genérico para transferencias/Bizum sin concepto identificable (ingreso ordinario)
+        return new BizumClassificationResult("Finanzas e Ingresos", "Transferencias Recibidas", false, Enums.TransactionNature.TrueIncome);
     }
 }

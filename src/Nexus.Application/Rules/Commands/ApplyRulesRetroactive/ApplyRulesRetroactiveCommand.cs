@@ -54,6 +54,7 @@ public class ApplyRulesRetroactiveCommandHandler
                 tx.RecurrencePeriod = eval.RecurrencePeriod;
                 tx.ExpenseFlexibility = eval.ExpenseFlexibility;
                 tx.ExpenseNature = eval.ExpenseNature;
+                tx.TransactionNature = eval.TransactionNature;
 
                 _transactionRepository.Update(tx);
                 updated++;

@@ -19,5 +19,10 @@ public class BizumConceptClassifierTests
         Assert.Equal(expectedMatch, result.IsMatch);
         Assert.Equal(expectedCat, result.CategoryName);
         Assert.Equal(expectedSubcat, result.SubcategoryName);
+        
+        var expectedNature = expectedMatch 
+            ? Nexus.Domain.Enums.TransactionNature.ExpenseReimbursement 
+            : Nexus.Domain.Enums.TransactionNature.TrueIncome;
+        Assert.Equal(expectedNature, result.SuggestedNature);
     }
 }

@@ -52,4 +52,9 @@ public class BankTransaction : BaseEntity, IBankTransaction
 
     public bool HasSplits { get; set; } = false;
     public ICollection<TransactionSplitItem> SplitItems { get; set; } = new List<TransactionSplitItem>();
+
+    // --- Enriquecimiento Océano Azul: Contra-partidas y Traspasos Neutros ---
+    public Enums.TransactionNature TransactionNature { get; set; } = Enums.TransactionNature.StandardExpense;
+    public Guid? LinkedTransactionId { get; set; }
+    public BankTransaction? LinkedTransaction { get; set; }
 }

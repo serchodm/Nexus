@@ -16,7 +16,8 @@ public static class CategorizationEngine
         bool IsRecurring,
         RecurrencePeriod RecurrencePeriod,
         ExpenseFlexibility ExpenseFlexibility,
-        ExpenseNature ExpenseNature
+        ExpenseNature ExpenseNature,
+        TransactionNature TransactionNature = TransactionNature.StandardExpense
     );
 
     /// <summary>
@@ -38,7 +39,8 @@ public static class CategorizationEngine
                 transaction.IsRecurring,
                 transaction.RecurrencePeriod,
                 transaction.ExpenseFlexibility,
-                transaction.ExpenseNature
+                transaction.ExpenseNature,
+                transaction.TransactionNature
             );
         }
 
@@ -50,14 +52,16 @@ public static class CategorizationEngine
         {
             if (MatchesRule(rule, description, merchant))
             {
-                return new CategorizationResult(
+                return CreateResult(
+                    transaction,
                     rule.TargetCategoryId,
                     rule.TargetSubcategoryId,
                     CategorizationSource.UserRule,
                     rule.SetIsRecurring ?? transaction.IsRecurring,
                     rule.SetIsRecurring == true ? RecurrencePeriod.Monthly : transaction.RecurrencePeriod,
                     rule.SetExpenseFlexibility ?? transaction.ExpenseFlexibility,
-                    rule.SetExpenseNature ?? transaction.ExpenseNature
+                    rule.SetExpenseNature ?? transaction.ExpenseNature,
+                    systemCategoryLookup
                 );
             }
         }
@@ -77,14 +81,16 @@ public static class CategorizationEngine
 
                 if (catId.HasValue)
                 {
-                    return new CategorizationResult(
+                    return CreateResult(
+                        transaction,
                         catId,
                         subId,
                         CategorizationSource.BizumSemantic,
                         false,
                         RecurrencePeriod.None,
                         ExpenseFlexibility.Discretionary,
-                        ExpenseNature.Individual
+                        ExpenseNature.Individual,
+                        systemCategoryLookup
                     );
                 }
             }
@@ -106,14 +112,16 @@ public static class CategorizationEngine
                     }
                 }
 
-                return new CategorizationResult(
+                return CreateResult(
+                    transaction,
                     matchedBankCat.Id,
                     subId,
                     CategorizationSource.BankNative,
                     transaction.IsRecurring,
                     transaction.RecurrencePeriod,
                     transaction.ExpenseFlexibility,
-                    transaction.ExpenseNature
+                    transaction.ExpenseNature,
+                    systemCategoryLookup
                 );
             }
         }
@@ -124,20 +132,103 @@ public static class CategorizationEngine
             var heuristic = EvaluateSystemHeuristics(description, merchant, systemCategoryLookup);
             if (heuristic != null)
             {
-                return heuristic;
+                return CreateResult(
+                    transaction,
+                    heuristic.CategoryId,
+                    heuristic.SubcategoryId,
+                    heuristic.Source,
+                    heuristic.IsRecurring,
+                    heuristic.RecurrencePeriod,
+                    heuristic.ExpenseFlexibility,
+                    heuristic.ExpenseNature,
+                    systemCategoryLookup
+                );
             }
         }
 
         // 5. Sin categorizar
-        return new CategorizationResult(
+        return CreateResult(
+            transaction,
             null,
             null,
             CategorizationSource.None,
             false,
             RecurrencePeriod.None,
             ExpenseFlexibility.Discretionary,
-            transaction.ExpenseNature
+            transaction.ExpenseNature,
+            systemCategoryLookup
         );
+    }
+
+    private static CategorizationResult CreateResult(
+        BankTransaction transaction,
+        Guid? categoryId,
+        Guid? subcategoryId,
+        CategorizationSource source,
+        bool isRecurring,
+        RecurrencePeriod recurrencePeriod,
+        ExpenseFlexibility flexibility,
+        ExpenseNature nature,
+        IReadOnlyDictionary<string, Category>? systemCategoryLookup)
+    {
+        var transNature = DetermineTransactionNature(transaction, categoryId, systemCategoryLookup);
+        return new CategorizationResult(
+            categoryId,
+            subcategoryId,
+            source,
+            isRecurring,
+            recurrencePeriod,
+            flexibility,
+            nature,
+            transNature
+        );
+    }
+
+    /// <summary>
+    /// Determina la naturaleza contable de la transacción (StandardExpense, ExpenseReimbursement, TrueIncome, InternalTransfer).
+    /// </summary>
+    public static TransactionNature DetermineTransactionNature(
+        BankTransaction transaction,
+        Guid? categoryId,
+        IReadOnlyDictionary<string, Category>? systemCategoryLookup)
+    {
+        // 1. Si es cargo bancario (Amount < 0), es gasto estándar por defecto
+        if (transaction.Amount < 0)
+        {
+            return TransactionNature.StandardExpense;
+        }
+
+        // 2. Si es abono bancario (Amount > 0):
+        // Detectar palabras clave explícitas de devolución/reembolso
+        var text = $"{transaction.CleanMerchantName} {transaction.Description} {transaction.Observations}".ToUpperInvariant();
+        if (Regex.IsMatch(text, @"\b(DEVOLUCION|DEVOLUCIÓN|ABONO|REEMBOLSO|REFUND|REVERSAL)\b", RegexOptions.IgnoreCase))
+        {
+            return TransactionNature.ExpenseReimbursement;
+        }
+
+        // Si la categoría asignada es de tipo Gasto (FlowType.Expense), el abono actúa como contra-partida de gasto
+        if (categoryId.HasValue && systemCategoryLookup != null)
+        {
+            var matchedCategory = systemCategoryLookup.Values.FirstOrDefault(c => c.Id == categoryId.Value);
+            if (matchedCategory != null)
+            {
+                if (matchedCategory.FlowType == FlowType.Expense)
+                {
+                    return TransactionNature.ExpenseReimbursement;
+                }
+                if (matchedCategory.FlowType == FlowType.Transfer)
+                {
+                    return TransactionNature.InternalTransfer;
+                }
+                if (matchedCategory.FlowType == FlowType.Income)
+                {
+                    return TransactionNature.TrueIncome;
+                }
+            }
+        }
+
+        // Fallback para abonos sin categoría de gasto
+        return TransactionNature.TrueIncome;
     }
 
     private static bool MatchesRule(CategorizationRule rule, string description, string cleanMerchant)

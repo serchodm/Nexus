@@ -8,7 +8,11 @@ import {
   ChevronDown, 
   ChevronUp, 
   Edit3,
-  Sparkles
+  Sparkles,
+  RotateCcw,
+  TrendingUp,
+  ArrowLeftRight,
+  Link2
 } from 'lucide-react';
 import { CategoryBadge } from '../categories/CategoryBadge';
 import type { TransactionDetail } from '../../types/transaction';
@@ -18,6 +22,7 @@ interface TransactionRowProps {
   transaction: TransactionDetail;
   onOpenCategorize: (tx: TransactionDetail) => void;
   onOpenSplit: (tx: TransactionDetail) => void;
+  onOpenLink?: (tx: TransactionDetail) => void;
   reconciliationCandidate?: ReconciliationCandidate;
   onReviewReconciliation?: (candidate: ReconciliationCandidate) => void;
 }
@@ -26,10 +31,83 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
   transaction: tx,
   onOpenCategorize,
   onOpenSplit,
+  onOpenLink,
   reconciliationCandidate,
   onReviewReconciliation,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const getNatureBadge = (nature?: number, linkedId?: string | null) => {
+    switch (nature) {
+      case 1: // ExpenseReimbursement
+        return (
+          <span
+            title={linkedId ? 'Contrapartida vinculada a su cargo original' : 'Contrapartida de gasto (compensa sin inflar ingresos)'}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.2rem',
+              fontSize: '0.68rem',
+              padding: '0.12rem 0.42rem',
+              borderRadius: 'var(--radius-sm)',
+              background: 'hsla(160, 84%, 39%, 0.15)',
+              border: '1px solid hsla(160, 84%, 39%, 0.35)',
+              color: '#34d399',
+              fontWeight: 600,
+            }}
+          >
+            <RotateCcw size={10} />
+            Reembolso
+            {linkedId && <Link2 size={10} style={{ marginLeft: '1px' }} />}
+          </span>
+        );
+      case 2: // TrueIncome
+        return (
+          <span
+            title="Ingreso real computado en balance patrimonial"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.2rem',
+              fontSize: '0.68rem',
+              padding: '0.12rem 0.42rem',
+              borderRadius: 'var(--radius-sm)',
+              background: 'hsla(142, 76%, 36%, 0.2)',
+              border: '1px solid hsla(142, 76%, 36%, 0.4)',
+              color: '#10b981',
+              fontWeight: 700,
+            }}
+          >
+            <TrendingUp size={10} />
+            Ingreso
+          </span>
+        );
+      case 3: // InternalTransfer
+        return (
+          <span
+            title={linkedId ? 'Traspaso interno emparejado entre cuentas propias' : 'Traspaso interno propio (neutro patrimonial)'}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.2rem',
+              fontSize: '0.68rem',
+              padding: '0.12rem 0.42rem',
+              borderRadius: 'var(--radius-sm)',
+              background: 'hsla(215, 16%, 47%, 0.18)',
+              border: '1px solid hsla(215, 16%, 47%, 0.35)',
+              color: '#94a3b8',
+              fontWeight: 600,
+            }}
+          >
+            <ArrowLeftRight size={10} />
+            Traspaso
+            {linkedId && <Link2 size={10} style={{ marginLeft: '1px' }} />}
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
 
   const getPlatformBadge = (platform: number) => {
     switch (platform) {
@@ -92,6 +170,8 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
             </span>
 
             {getPlatformBadge(tx.externalPlatform)}
+
+            {getNatureBadge(tx.transactionNature, tx.linkedTransactionId)}
 
             {tx.isRecurring && (
               <span
@@ -276,26 +356,51 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
 
         {/* Acciones */}
         <td style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
-          <button
-            onClick={() => onOpenSplit(tx)}
-            title={tx.hasSplits ? 'Editar o deshacer desglose' : 'Desglosar en varias partidas'}
-            style={{
-              background: tx.hasSplits ? 'hsla(217, 91%, 60%, 0.1)' : 'transparent',
-              border: `1px solid ${tx.hasSplits ? 'var(--primary-500)' : 'var(--border-subtle)'}`,
-              borderRadius: 'var(--radius-sm)',
-              color: tx.hasSplits ? 'var(--primary-500)' : 'var(--text-muted)',
-              padding: '0.3rem 0.6rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              fontSize: '0.74rem',
-              fontWeight: 500,
-            }}
-          >
-            <Layers size={13} />
-            {tx.hasSplits ? 'Editar Splits' : 'Desglosar'}
-          </button>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              onClick={() => onOpenSplit(tx)}
+              title={tx.hasSplits ? 'Editar o deshacer desglose' : 'Desglosar en varias partidas'}
+              style={{
+                background: tx.hasSplits ? 'hsla(217, 91%, 60%, 0.1)' : 'transparent',
+                border: `1px solid ${tx.hasSplits ? 'var(--primary-500)' : 'var(--border-subtle)'}`,
+                borderRadius: 'var(--radius-sm)',
+                color: tx.hasSplits ? 'var(--primary-500)' : 'var(--text-muted)',
+                padding: '0.3rem 0.6rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontSize: '0.74rem',
+                fontWeight: 500,
+              }}
+            >
+              <Layers size={13} />
+              {tx.hasSplits ? 'Splits' : 'Desglosar'}
+            </button>
+
+            {onOpenLink && (
+              <button
+                onClick={() => onOpenLink(tx)}
+                title={tx.linkedTransactionId ? 'Ver o cambiar vinculación de contrapartida' : 'Vincular a cargo original o traspaso'}
+                style={{
+                  background: tx.linkedTransactionId ? 'hsla(160, 84%, 39%, 0.12)' : 'transparent',
+                  border: `1px solid ${tx.linkedTransactionId ? 'hsla(160, 84%, 39%, 0.4)' : 'var(--border-subtle)'}`,
+                  borderRadius: 'var(--radius-sm)',
+                  color: tx.linkedTransactionId ? '#34d399' : 'var(--text-muted)',
+                  padding: '0.3rem 0.6rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  fontSize: '0.74rem',
+                  fontWeight: 500,
+                }}
+              >
+                <Link2 size={13} />
+                {tx.linkedTransactionId ? 'Enlazado' : 'Vincular'}
+              </button>
+            )}
+          </div>
         </td>
       </tr>
 
