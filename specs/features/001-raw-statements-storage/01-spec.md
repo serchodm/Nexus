@@ -1,23 +1,23 @@
 # Especificación Funcional: Ingesta y Almacenamiento Inmutable de Extractos Multi-Banco
 
 - **ID de la Feature**: `001-raw-statements-storage`
-- **Estado**: Aprobado (Gate 1 - Con Salvaguardas, Roles y Refinamiento Crítico)
+- **Estado**: Completado con Éxito (100% Verificado - Alineado con SYSTEM_VISION.md)
 - **Fecha de Creación**: 2026-09-26
-- **Última Actualización**: 2026-09-27
-- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md)
+- **Última Actualización**: 2026-10-03
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md) (Pilar 1: Ingesta Universal y Pilar 2: Consolidación Patrimonial Multiactivo)
 
 ---
 
 ## 1. Resumen y Contexto
-Esta funcionalidad constituye el primer ladrillo fundacional (*Vertical Slice 1*) de Nexus. Introduce un **Modelo Canónico Financiero Multi-Banco** que permite a los usuarios gestionar múltiples cuentas bancarias (incluso dentro de una misma entidad, como cuentas de gastos comunes, ahorros personales o fondos familiares) e importar extractos de movimientos (con soporte inicial verificado para **BBVA** e **ING Direct**).
+Esta funcionalidad constituye el primer ladrillo fundacional (*Vertical Slice 1*) de **Nexus como Financial OS**. Materializa de forma directa el **Pilar 1 (Ingesta Universal de Datos y Extractos)** y sienta las bases contables del **Pilar 2 (Consolidación Patrimonial Multiactivo)**, permitiendo a los usuarios gestionar múltiples cuentas bancarias (incluso dentro de una misma entidad: cuentas de gastos comunes, ahorros personales o fondos familiares) e importar extractos periódicos inmutables (soporte para **BBVA** e **ING Direct**).
 
-Garantías del sistema:
-1. **Roles de Titularidad Precisos**: Diferenciación legal y patrimonial entre **Titular**, **Cotitular**, **Apoderado/Autorizado** y **Representante Legal (Custodia de Menores)**, asegurando que solo el dinero que realmente pertenece al usuario compute en su patrimonio neto.
-2. **Previsualización antes de persistir (con Token Efímero)**: Resumen en memoria de saldo inicial, saldo final y fechas antes de confirmar la carga definitiva, evitando tener que re-subir el fichero en la confirmación.
-3. **Chequeo de coherencia y continuidad de saldo**: Detección de discontinuidades entre el saldo histórico de la cuenta y los saldos del extracto.
-4. **Comprobación de tarjetas vinculadas**: Verificación cruzada entre las tarjetas detectadas en las observaciones del extracto y las tarjetas asociadas a la cuenta.
-5. **Deshacer importación (Rollback en 1 Clic)**: Capacidad de revertir completamente un lote importado por error sin dejar rastro ni corromper el saldo.
-6. **Robustez de Codificación y Limpieza de Datos**: Soporte transparente de codificaciones bancarias españolas (`Windows-1252`, `Latin1`, `UTF-8`) y normalización de espacios en blanco en descripciones.
+Garantías del sistema en el marco del Financial OS:
+1. **Roles de Titularidad y Patrimonio Neto Real**: Diferenciación legal y patrimonial entre **Titular** (`SoleOwner`), **Cotitular** (`PrimaryJoint` / `SecondaryJoint`), **Apoderado/Autorizado** y **Representante Legal (Custodia de Menores)** con porcentaje explícito de participación ($0\%$ a $100\%$), asegurando que la ecuación de Patrimonio Neto Real de Nexus no se vea distorsionada por saldos compartidos o de terceros.
+2. **Previsualización Atómica antes de persistir (con Token Efímero)**: Resumen en memoria de saldo inicial, saldo final y fechas antes de confirmar la carga definitiva, optimizado para móvil y web sin re-subidas redundantes de ficheros.
+3. **Chequeo de Coherencia y Continuidad de Saldo**: Detección de discontinuidades (`BALANCE_DISCONTINUITY`) entre el saldo histórico de la cuenta y los saldos del extracto.
+4. **Comprobación de Tarjetas Vinculadas**: Verificación cruzada (`CARD_MISMATCH`) entre las tarjetas detectadas en las observaciones del extracto y las tarjetas registradas en la cuenta.
+5. **Deshacer Importación (Rollback Atómico en 1 Clic)**: Capacidad de revertir completamente un lote importado por error sin dejar rastro ni corromper saldos históricos.
+6. **Robustez de Codificación y Limpieza de Datos**: Soporte de codificaciones bancarias españolas (`Windows-1252`, `Latin1`, `UTF-8`), sanitización de PAN irreversible (`**** **** **** 1234`) y normalización de espacios en blanco.
 
 ---
 

@@ -1,9 +1,10 @@
 # Especificación Funcional: Conectores de Comercio & Reconciliación Externa (Amazon & PayPal Sync)
 
 - **ID de la Feature**: `003-commerce-connectors-and-reconciliation`
-- **Estado**: Aprobado (Gate 1)
+- **Estado**: Completado con Éxito (100% Verificado - Alineado con SYSTEM_VISION.md)
 - **Fecha de Creación**: 2026-09-29
-- **Última Actualización**: 2026-09-29
+- **Última Actualización**: 2026-10-03
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md) (Pilar 5: Conectores de Comercio, Pilar 6: Nexus Aura y Pilar 3: Espacios Compartidos)
 - **Dependencias**: `001-raw-statements-storage`, `002-transaction-categorization`
 - **Issue en GitHub**: [#15](https://github.com/serchodm/Nexus/issues/15)
 
@@ -16,13 +17,15 @@ En los extractos bancarios tradicionales (Slices 001 y 002), un volumen muy sign
 - `PAYPAL *REVENUEST` o `PAYPAL *[código alfanumérico]`
 - `SUMUP *COMERCIO`
 
-Esto provoca una ceguera analítica: el usuario sabe que gastó 89,90 € en Amazon, pero no sabe qué artículos compró ni cómo clasificarlos contablemente (¿fue un libro de trabajo, ropa deportiva o comida?). Igualmente, en PayPal se desconoce el comercio subyacente real (Spotify, Steam, Decathlon, Uber).
+Esto provoca una severa ceguera analítica: el usuario sabe que gastó 89,90 € en Amazon, pero no sabe qué artículos compró ni cómo clasificarlos contablemente (¿fue material de trabajo, ropa o comida?). Igualmente, en PayPal se desconoce el comercio subyacente real (Spotify, Steam, Decathlon, Uber).
 
-**Nexus 003** implementa los **Conectores de Comercio y el Motor de Reconciliación Cruzada**:
-1. **Amazon Order Reports Parser**: Ingesta oficial de reportes de pedidos en CSV/ZIP generados por Amazon, extrayendo pedidos, paquetes, artículos individuales, precios, IVA y categorías estimadas.
+En el marco de **Nexus como Financial OS**, la Feature 003 materializa el **Pilar 5 (Conectores de Comercio y Pasarelas de Pago Online)** y aporta capacidades críticas para los Pilares 3 y 6:
+1. **Amazon Order Reports Parser**: Ingesta oficial de reportes de pedidos en CSV generados por Amazon, extrayendo pedidos, paquetes, artículos individuales, precios unitarios, IVA y categorías estimadas.
 2. **PayPal Connector**: Conexión directa mediante **OAuth2 / API REST oficial de transacciones** (`/v1/reporting/transactions`) y soporte alternativo para **importación de CSV oficial de actividad**.
-3. **Motor de Reconciliación Cruzada**: Algoritmo determinista y heurístico que empareja cargos bancarios con pedidos externos por importe exacto, moneda y ventana temporal de liquidación ($\pm 7$ días).
-4. **Auto-Generación de Splits**: Cuando un cargo bancario reconciliado incluye múltiples productos de diferente índole, el sistema genera automáticamente un **Split Transaction** respetando estrictamente el Invariante Contable RN-02 y la Prevalencia Heurística RN-01.
+3. **Motor de Reconciliación Cruzada (1:1 y 1:N)**: Algoritmo combinatorio determinista (Subset Sum) que empareja cargos bancarios con pedidos externos por importe exacto, moneda y ventana temporal de liquidación ($\pm 7$ días).
+4. **Auto-Generación de Splits**: Cuando un cargo bancario reconciliado incluye múltiples productos de diferente índole, el sistema genera automáticamente un **Split Transaction** respetando estrictamente la Invariante Contable RN-02 y la Prevalencia de Soberanía RN-01.
+5. **Combustible para Nexus Aura (Pilar 6)**: Desciende el detalle analítico hasta el SKU/artículo, permitiendo a Aura responder preguntas en lenguaje natural (*"¿Cuánto he gastado en tecnología en Amazon este año?"*) y detectar suscripciones pagadas vía PayPal.
+6. **Desglose en Espacios Compartidos (Pilar 3)**: Permite dividir una compra mixta de Amazon imputando los artículos de uso común al **Espacio Compartido** (hogar) y los personales al **Espacio Individual** sin vulnerar el Muro de Privacidad (RN-07).
 
 ---
 

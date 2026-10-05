@@ -1,9 +1,10 @@
 # Especificación Funcional: Motor de Categorización Inteligente, Merchant Intelligence y Desglose de Gastos
 
 - **ID de la Feature**: `002-transaction-categorization`
-- **Estado**: Aprobado (Gate 1)
+- **Estado**: Completado con Éxito (100% Verificado - Alineado con SYSTEM_VISION.md)
 - **Fecha de Creación**: 2026-09-27
-- **Última Actualización**: 2026-09-27
+- **Última Actualización**: 2026-10-03
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md) (Pilar 4: Categorización Autónoma & Splits, Pilar 3: Espacios Compartidos, Pilar 6: Nexus Aura y Pilar 7: Salud Financiera)
 - **Dependencias**: `001-raw-statements-storage`
 
 ---
@@ -12,14 +13,14 @@
 
 Tras la ingesta e inmutabilidad de los extractos bancarios en la Feature 001, las transacciones quedan almacenadas con sus descripciones brutas (ej. `"TPV 49201 BCN MERCADONA S.A. 25/09"`, `"PAYPAL *NETFLIX 9238"`, `"BIZUM CENA CUMPLEAÑOS MARTA"`, `"EL CORTE INGLES S.A."`).
 
-Nexus va un paso más allá de las herramientas tradicionales (Fintonic, YNAB, Toshl) eliminando la categorización ciega y proporcionando un **Motor de Inteligencia Financiera** compuesto por:
-1. **Taxonomía Jerárquica Híbrida**: Categorías y subcategorías del sistema con colores/iconos para dashboards + categorías personalizadas del usuario.
-2. **Merchant Intelligence Pipeline**: Extracción y normalización del comercio limpio (`CleanMerchantName`), limpiando prefijos de terminales TPV y pasarelas de pago (`TPV*`, `SUMUP*`, `PAYPAL*`, `STRIPE*`, `REDYS*`).
-3. **Split Transactions (Desglose de Gasto Mixto)**: Posibilidad de dividir una transacción en múltiples partidas independientes con importes y categorías distintas (ej. 130 € = 90 € Supermercado + 40 € Hogar) garantizando la invariante contable.
-4. **Bizum & Transfer Concept Matching**: Categorización semántica de Bizums y transferencias basada en el texto del concepto.
-5. **Detección de Recurrencia (Gastos Fijos vs. Variables / Suscripciones)**: Distinción entre el coste de vida basal comprometido del mes y el gasto discrecional variable.
-6. **Pre-marcado Compartido vs. Individual**: Conexión nativa con el modelo dual de gasto, pre-asignando si una partida es personal o de grupo (Splitwise).
-7. **Metadatos de Plataformas Online**: Preparación de campos para la reconciliación con pasarelas de pago (PayPal, Amazon, etc.).
+En el marco de **Nexus como Financial OS**, la Feature 002 implementa el **Pilar 4 (Categorización Autónoma, Merchant Intelligence y Desglose de Gastos)** y crea el sustrato estructurado indispensable para alimentar los Pilares 3, 6 y 7 de la visión macro:
+1. **Taxonomía Jerárquica Híbrida**: Categorías y subcategorías del sistema con colores/iconos HSL para visualización unificada + categorías creadas por el usuario.
+2. **Merchant Intelligence Pipeline**: Extracción y normalización determinista del comercio limpio (`CleanMerchantName`), eliminando códigos de terminales TPV y pasarelas de pago (`TPV*`, `SUMUP*`, `PAYPAL*`, `STRIPE*`, `REDYS*`).
+3. **Split Transactions (Desglose de Compras Compuestas)**: Posibilidad de dividir una transacción en múltiples partidas independientes con importes y categorías distintas (ej. 130 € = 90 € Supermercado + 40 € Hogar) garantizando matemáticamente la **Invariante de Balance Cero RN-02** ($\sum \text{Partidas} = \text{Total}$).
+4. **Bizum & Transfer Concept Matching**: Clasificación semántica de Bizums y transferencias basada en el texto del concepto.
+5. **Detección de Recurrencia (Gastos Fijos vs. Variables / Suscripciones)**: Base de datos para el **Pilar 6 (Nexus Aura: Vigilancia de Suscripciones y Gastos Vampiro)** y cálculo del *Cojín de Emergencia (Runway)* en el **Pilar 7 (Nexus Health Score)**.
+6. **Pre-marcado Compartido vs. Individual (`IsShared`)**: Preparación de datos para el **Pilar 3 (Modelo Dual del Gasto y Espacio Compartido con Muro de Privacidad)**.
+7. **Metadatos de Plataformas Online**: Base de enlace para el **Pilar 5 (Conectores de Comercio: Amazon y PayPal)**.
 
 ---
 

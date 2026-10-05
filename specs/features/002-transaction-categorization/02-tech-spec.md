@@ -1,10 +1,11 @@
 # Especificación Técnica: Motor de Categorización Inteligente, Merchant Intelligence y Desglose de Gastos
 
 - **ID de la Feature**: `002-transaction-categorization`
-- **Estado**: Aprobado (Gate 2 - Aprobado y Vinculado a Issues #8-#14)
+- **Estado**: Completado con Éxito (Gate 2 - Alineado con SYSTEM_VISION.md)
 - **Especificación Funcional Asociada**: [01-spec.md](./01-spec.md)
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md)
 - **Fecha de Creación**: 2026-09-27
-- **Última Actualización**: 2026-09-27
+- **Última Actualización**: 2026-10-03
 
 ---
 

@@ -4,7 +4,9 @@
 - **Especificaciones de Referencia**:
   - Funcional: [01-spec.md](./01-spec.md)
   - Técnica: [02-tech-spec.md](./02-tech-spec.md)
-- **Estado**: En Ejecución (Gate 3 Aprobado - Fases 1 a 6 Abiertas en GitHub)
+  - Visión Macro: [SYSTEM_VISION.md](../../SYSTEM_VISION.md)
+- **Estado**: Completado con Éxito (100% de Pruebas Unitarias y E2E Verificadas - DoD Cumplido)
+- **Última Actualización**: 2026-10-03
 
 ---
 
@@ -92,16 +94,16 @@
   - *Criterio de verificación*: `dotnet build` global con 0 errores y 14 endpoints FastEndpoints operativos.
 
 ### Fase 5: Pruebas Unitarias y de Integración (`Nexus.UnitTests`)
-- [ ] **Tarea 5.1**: Tests Unitarios de Dominio:
+- [x] **Tarea 5.1**: Tests Unitarios de Dominio:
   - `MerchantNormalizerTests`: Validación de casos de prueba reales (Mercadona, TPV, SumUp, Cabify, PayPal, Amazon, Iberdrola).
   - `BizumConceptClassifierTests`: Conceptos semánticos (cena, fútbol, padel, gasolina, fallback).
   - `TransactionSplitValidatorTests`: Invariante contable estricta $\sum \text{Splits} == \text{Total}$ y control de tolerancias.
   - `CategorizationEngineTests`: Reglas de prevalencia RN-01 y detección de suscripciones periódicas.
-- [ ] **Tarea 5.2**: Tests Unitarios de Aplicación:
+- [x] **Tarea 5.2**: Tests Unitarios de Aplicación:
   - `SplitTransactionCommandHandlerTests`: Verificación de creación de partidas y bloqueo si los importes no cuadran.
   - `ApplyRulesRetroactiveCommandHandlerTests`: Inmutabilidad de transacciones con `IsManual == true`.
   - `ConfirmStatementImportCommandHandlerTests`: Auto-enriquecimiento de transacciones al importar extractos de BBVA e ING.
-- [ ] **Tarea 5.3**: Script E2E Automatizado (`tests/e2e_categorization_test.ps1`):
+- [x] **Tarea 5.3**: Script E2E Automatizado (`tests/e2e_categorization_test.ps1`):
   - Ingesta de extracto con TPVs, Bizums y suscripciones.
   - Verificación de comercios limpios y categorías asignadas.
   - Desglose de un ticket en 2 partidas con verificación de saldo intacto.
@@ -109,9 +111,9 @@
   - *Criterio de verificación*: 100% de tests unitarios y script E2E superados.
 
 ### Fase 6: Frontend (`frontend/`)
-- [ ] **Tarea 6.1**: Modelos TypeScript en `types/category.ts`, `types/rule.ts` y actualización de `types/transaction.ts`.
-- [ ] **Tarea 6.2**: Hooks con TanStack React Query (`useCategories.ts`, `useRules.ts`, `useTransactionSplits.ts`).
-- [ ] **Tarea 6.3**: Componentes de UI:
+- [x] **Tarea 6.1**: Modelos TypeScript en `types/category.ts`, `types/rule.ts` y actualización de `types/transaction.ts`.
+- [x] **Tarea 6.2**: Hooks con TanStack React Query (`useCategories.ts`, `useRules.ts`, `useTransactionSplits.ts`).
+- [x] **Tarea 6.3**: Componentes de UI:
   - `CategoryBadge`: Renderiza icono Lucide y color HSL de la categoría.
   - `TransactionRow`: Muestra `CleanMerchantName`, badge de categoría, badge de recurrencia y botón acordeón `[2 partidas]`.
   - `SplitTransactionModal`: Modal interactivo que permite añadir $N$ líneas de desglose con barra de balance en tiempo real ("Restante por asignar: 0,00 €").

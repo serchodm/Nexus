@@ -1,10 +1,11 @@
 # Especificación Técnica: Conectores de Comercio & Reconciliación Externa (Amazon & PayPal Sync)
 
 - **ID de la Feature**: `003-commerce-connectors-and-reconciliation`
-- **Estado**: Aprobado (Gate 2)
+- **Estado**: Completado con Éxito (Gate 2 - Alineado con SYSTEM_VISION.md)
 - **Especificación Funcional Asociada**: [01-spec.md](./01-spec.md)
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md) (Pilar 5, Pilar 6 y RN-07)
 - **Fecha de Creación**: 2026-09-29
-- **Última Actualización**: 2026-09-29
+- **Última Actualización**: 2026-10-03
 - **Issue en GitHub**: [#15](https://github.com/serchodm/Nexus/issues/15)
 
 ---

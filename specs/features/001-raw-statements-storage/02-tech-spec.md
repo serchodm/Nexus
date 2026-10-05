@@ -1,10 +1,11 @@
 # Especificación Técnica: Ingesta y Almacenamiento Inmutable de Extractos Multi-Banco
 
 - **ID de la Feature**: `001-raw-statements-storage`
-- **Estado**: Aprobado (Gate 2 - Con Refinamiento Crítico y Optimizaciones)
+- **Estado**: Completado con Éxito (Gate 2 - Alineado con SYSTEM_VISION.md)
 - **Especificación Funcional Asociada**: [01-spec.md](./01-spec.md)
+- **Documento Macro de Referencia**: [SYSTEM_VISION.md](../../SYSTEM_VISION.md)
 - **Fecha de Creación**: 2026-09-27
-- **Última Actualización**: 2026-09-27
+- **Última Actualización**: 2026-10-03
 
 ---
 

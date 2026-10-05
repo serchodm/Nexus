@@ -7,6 +7,21 @@ import type {
   CommerceOrder,
 } from '../types/commerce';
 
+export function useCommerceOrders(provider?: number, page = 1, pageSize = 50) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+  if (provider !== undefined) {
+    params.append('provider', provider.toString());
+  }
+
+  return useQuery({
+    queryKey: ['commerce-orders', provider, page, pageSize],
+    queryFn: () => apiClient<CommerceOrder[]>(`/api/commerce/orders?${params.toString()}`),
+  });
+}
+
 export function useCommerce() {
   const queryClient = useQueryClient();
 
@@ -14,21 +29,6 @@ export function useCommerce() {
     queryKey: ['commerce-reconciliations'],
     queryFn: () => apiClient<ReconciliationCandidate[]>('/api/commerce/reconciliations'),
   });
-
-  const ordersQuery = (provider?: number, page = 1, pageSize = 50) => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      pageSize: pageSize.toString(),
-    });
-    if (provider !== undefined) {
-      params.append('provider', provider.toString());
-    }
-
-    return useQuery({
-      queryKey: ['commerce-orders', provider, page, pageSize],
-      queryFn: () => apiClient<CommerceOrder[]>(`/api/commerce/orders?${params.toString()}`),
-    });
-  };
 
   const importAmazonMutation = useMutation({
     mutationFn: (file: File) => {
@@ -111,7 +111,6 @@ export function useCommerce() {
     reconciliations: reconciliationsQuery.data ?? [],
     isLoadingReconciliations: reconciliationsQuery.isLoading,
     refetchReconciliations: reconciliationsQuery.refetch,
-    useOrders: ordersQuery,
     importAmazon: importAmazonMutation,
     importPayPal: importPayPalMutation,
     connectPayPal: connectPayPalMutation,
