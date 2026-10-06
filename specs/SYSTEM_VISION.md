@@ -110,17 +110,135 @@ Nexus resuelve la fricción de las finanzas en pareja o de convivencia mediante 
 
 ---
 
-### Pilar 6: Nexus Aura — Copiloto Financiero Proactivo e Inteligencia Patrimonial
-**Nexus Aura** es el motor de inteligencia y asistente proactivo integrado en Nexus. A diferencia de chatbots genéricos, Aura opera exclusivamente sobre los datos verificados del usuario con explicabilidad algorítmica:
+### Pilar 6: Nexus Aura — Agente de Inteligencia Financiera y Copiloto Patrimonial
 
-- **Auditoría de Ineficiencias Patrimoniales**:
-  - Detección de dinero ocioso al 0% en cuentas corrientes que supera el fondo de emergencia óptimo.
-  - Cálculo del coste de oportunidad frente a la inflación y opciones de rentabilidad pasiva.
-- **Vigilancia de Suscripciones y Gastos Vampiro**:
-  - Alerta de suscripciones duplicadas, recurrentes no utilizadas o incrementos repentinos de cuota.
-- **Consultas Analíticas en Lenguaje Natural (NLQ)**:
-  - Capacidad de responder preguntas complejas cruzando todas las entidades: *"¿Cuánto he gastado en suministros del hogar este año sumando mis pagos directos y los del espacio compartido?"*.
-- **Independencia e Imparcialidad Absoluta (RN-08)**: Aura nunca recomienda productos de terceros a cambio de comisiones; responde con fidelidad matemática exclusiva al usuario.
+**Nexus Aura** es el **Agente de Inteligencia Financiera de Nexus**. A diferencia de chatbots genéricos o asistentes conversacionales accesorios, Aura es la capa de razonamiento que interpreta el estado financiero del usuario, detecta oportunidades y riesgos, explica sus conclusiones con rigor matemático y permite explorar decisiones futuras con base empírica verificable.
+
+> **Principio Arquitectónico Rector:**
+> *"Nexus conoce tu dinero. Nexus Analytics lo calcula. Nexus Aura lo entiende. El usuario decide."*
+
+#### 6.1. Identidad y Separación Estricta de Responsabilidades
+Nexus se encarga de **registrar y calcular los hechos financieros**; Aura se encarga de **interpretarlos y convertirlos en inteligencia accionable**. Esta separación de capas es inviolable:
+
+| Capa | Responsabilidad | Ejemplo |
+| :--- | :--- | :--- |
+| **Nexus Core / Financial Ledger** | Fuente única de verdad contable inmutable | *"Tienes 14.230 € en cuentas bancarias."* |
+| **Nexus Analytics / What-If Engine** | Fórmulas deterministas y proyecciones numéricas | *"Tu runway es de 8,4 meses. Tu DTI es del 22%."* |
+| **Nexus Aura (Intelligence)** | Interpretación contextual y razonamiento financiero | *"Tu liquidez supera en 8.000 € tu colchón de seguridad."* |
+| **Aura Agent (Copiloto)** | Propuesta de acciones, auditorías y simulaciones | *"Podrías evaluar remunerar ese excedente al 3,2% TAE."* |
+| **Execution Layer** | Ejecución bancaria o movimiento directo de fondos | **Fuera de alcance absoluto de Nexus (No PISP).** |
+
+Aura nunca inventa datos financieros ni sustituye al Ledger como fuente de verdad.
+
+```mermaid
+flowchart TD
+    User["👤 Usuario"] --> Aura["🏛️ NEXUS AURA<br/>Financial Intelligence Agent"]
+
+    Aura --> Intent["Intent Detection (Comprensión de Intención)"]
+    Aura --> Context["Financial Context Engine (7 Dimensiones)"]
+    Aura --> Proactive["Proactive Intelligence (Auditoría Continua)"]
+    Aura --> Explain["Explainability Engine (Trazabilidad Extrema)"]
+
+    Intent --> Reasoning["Reasoning & Orchestration Layer"]
+    Context --> Reasoning
+    Proactive --> Reasoning
+    Explain --> Reasoning
+
+    Reasoning --> Analytics["Nexus Analytics Engine"]
+    Reasoning --> WhatIf["What-If Scenario Engine"]
+    Reasoning --> Shared["Shared Ledger (Espacio Común)"]
+    Reasoning --> Wealth["Wealth & Net Worth Engine"]
+    Reasoning --> Transactions["Transaction & Categorization Engine"]
+
+    Analytics --> Ledger["📊 NEXUS FINANCIAL LEDGER<br/>(Single Source of Truth)"]
+    WhatIf --> Ledger
+    Shared --> Ledger
+    Wealth --> Ledger
+    Transactions --> Ledger
+
+    Ledger --> Sources["Open Banking / Extractos / Amazon / PayPal / Inputs Manuales"]
+
+    Reasoning --> Insights["💡 Insights Estructurados / Dictámenes / Escenarios / Respuestas"]
+    Insights --> User
+```
+
+#### 6.2. Financial Context Engine (Las 7 Dimensiones)
+Aura opera sobre un **Contexto Financiero Unificado** construido exclusivamente a partir de información disponible y verificable en Nexus:
+1. **Liquidez**: Saldos reales, cash flow mensual, ingresos/gastos recurrentes y runway disponible.
+2. **Patrimonio**: Net worth real, distribución de activos y pasivos, cotitularidad ponderada y evolución histórica.
+3. **Consumo y Gastos**: Categorías, tendencias estacionales, suscripciones fijas y anomalías de comportamiento.
+4. **Finanzas Compartidas**: Balances bilaterales, deudas activas, ratio Fair-Share y liquidaciones Bizum históricas.
+5. **Inversiones y Activos**: Fondos indexados, acciones, inmuebles, vehículos, planes y criptoactivos (criterio FIFO).
+6. **Pasivos y Carga Financiera**: Hipotecas, cuotas, amortización pendiente y porcentaje de absorción de ingresos (DTI).
+7. **Objetivos y Supuestos**: Metas de ahorro, colchón mínimo objetivo y horizontes temporales.
+
+**Tipología Epistémica Obligatoria:** Aura distingue siempre en sus razonamientos:
+- **Dato verificado**: Hecho objetivo proveniente del Ledger o extracto bancario.
+- **Cálculo**: Resultado de una fórmula matemática determinista de Nexus.
+- **Inferencia**: Conclusión razonada a partir de patrones contables observables.
+- **Hipótesis**: Supuesto condicional introducido por el usuario en una simulación.
+- **Recomendación**: Alternativa prudente propuesta para la toma de decisión del usuario.
+
+#### 6.3. Detección de Intenciones Financieras (Natural Language Queries)
+Aura interpreta el lenguaje natural del usuario y lo vincula con la capacidad analítica adecuada:
+
+| Intención del Usuario | Capacidad Analítica de Aura |
+| :--- | :--- |
+| *"¿Cómo está mi salud financiera general?"* | Diagnóstico integral (Nexus Health Score multidimensional). |
+| *"¿Por qué he gastado tanto este mes?"* | Desglose comparativo de cash flow y variaciones por categoría. |
+| *"¿Tengo demasiado dinero parado en cuenta?"* | Análisis de coste de oportunidad de liquidez ociosa vs. inflación. |
+| *"¿Qué suscripciones me han subido de precio?"* | Detección de anomalías en cargos recurrentes periódicos. |
+| *"¿Cuánto le debo o me debe mi pareja?"* | Consulta bilateral del Shared Ledger y propuesta de liquidación. |
+| *"¿Me puedo comprar un piso de 300.000 €?"* | Orquestación del What-If Engine con proyección patrimonial a 25 años. |
+| *"¿Qué ocurre si me quedo en paro 6 meses?"* | Stress Test de supervivencia según gastos fijos y fondo de emergencia. |
+| *"¿Estoy diversificado correctamente?"* | Análisis de concentración multiactivo y exposición por categoría. |
+
+#### 6.4. Inteligencia Proactiva (Auditoría Continua de 7 Patrones)
+Aura no espera pasivamente a que el usuario pregunte. Si existe evidencia matemática verificable, genera **Insights Proactivos Estructurados**:
+- **A. Dinero Ocioso**: Alerta de saldos en cuentas al 0% que exceden holgadamente el colchón objetivo de 6 meses.
+- **B. Gastos Vampiro y Fugas**: Detección de suscripciones zombi no utilizadas, servicios duplicados o incrementos silenciosos de tarifas.
+- **C. Cambios de Comportamiento**: Desviaciones significativas en partidas clave respecto a la media de los últimos 3–6 meses.
+- **D. Riesgo de Runway**: Advertencia temprana si el colchón de liquidez cae por debajo del umbral mínimo de seguridad.
+- **E. Concentración de Riesgo**: Alerta de sobreexposición excesiva a un único activo, divisa o vehículo de inversión.
+- **F. Tensión de Deuda (DTI)**: Advertencia si la carga financiera mensual se acerca o supera el límite prudencial del 30%–35%.
+- **G. Oportunidades de Optimización**: Detección de asimetrías contables, saldos cruzados o deducciones no aprovechadas.
+
+**Estructura Contractual de cada Insight Proactivo:**
+1. **Qué ha detectado** (el hecho observable).
+2. **Datos que lo justifican** (evidencia y cálculos del Ledger).
+3. **Por qué es relevante** (impacto patrimonial o coste de oportunidad).
+4. **Opciones sugeridas** (posibles cursos de acción para el usuario).
+5. **Nivel de confianza algorítmica** (`ConfidenceScore`).
+6. **Enlace a la transacción o cálculo subyacente**.
+
+#### 6.5. Razonamiento de Escenarios y Copiloto de Vida (What-If)
+Aura no emite juicios binarios simplistas (*"Sí, cómpralo"* o *"No, es mala idea"*). Actúa como un consejero patrimonial que audita pros, contras, márgenes de seguridad y compensaciones (*trade-offs*):
+- Desglosa las variables que favorecen o penalizan la decisión.
+- Mide la caída del runway de supervivencia y el nuevo DTI.
+- Cuantifica el coste de oportunidad a largo plazo (ej. capital detraído de la inversión indexada).
+- Define qué supuestos condicionan el resultado y qué margen de tolerancia existe ante subidas de tipos de interés o caídas de ingresos.
+
+#### 6.6. Principio Inviolable de Trazabilidad y Explicabilidad
+Toda conclusión de Aura debe poder rastrearse en orden inverso hasta la fuente primaria:
+$$\text{Insight Aura} \longrightarrow \text{Conclusión} \longrightarrow \text{Fórmula / Cálculo} \longrightarrow \text{Datos Financieros} \longrightarrow \text{Transacción / Extracto Origen}$$
+Quedan terminantemente prohibidas las respuestas de "caja negra" o justificaciones opacas.
+
+#### 6.7. Reglas Inviolables de Aura (RA-01 a RA-08)
+- **RA-01 Fuente de Verdad Inmutable**: El Ledger es la única fuente de verdad; Aura jamás altera un registro contable sin orden explícita del usuario.
+- **RA-02 Tolerancia Cero a la Alucinación Financiera**: Si faltan datos para responder con certeza, Aura declara su incertidumbre y solicita los datos necesarios.
+- **RA-03 Separación Hecho / Opinión**: Diferenciación tipográfica y semántica estricta entre hechos, cálculos, inferencias y recomendaciones.
+- **RA-04 Cero Ejecución Automática (No PISP)**: Aura nunca inicia transferencias, compra activos ni mueve fondos.
+- **RA-05 Imparcialidad Absoluta (Anti-Comisión)**: Cero sesgo publicitario o comisiones de entidades terceras.
+- **RA-06 Muro de Privacidad por Contexto**: Aura respeta el aislamiento del Shared Ledger; jamás filtra a un cónyuge o tercero datos del espacio individual.
+- **RA-07 Consentimiento Explícito**: Cualquier ajuste de configuración sugerido por Aura requiere confirmación consciente del usuario.
+- **RA-08 Incertidumbre Visible**: Toda proyección de futuro o cálculo condicional expone sus márgenes de error e hipótesis de cálculo.
+
+#### 6.8. Modelo de Madurez y Evolución Progresiva
+- **Nivel 1 — Observe (Observar)**: Comprensión y consolidación de la situación actual (*"Esto es lo que tienes y gastas"*).
+- **Nivel 2 — Explain (Explicar)**: Determinación de causas y relaciones contables (*"Tu ahorro cayó porque la cuota de la luz subió un 42%"*).
+- **Nivel 3 — Predict (Predecir)**: Proyección determinista de trayectorias (*"A este ritmo, tu fondo de emergencia bajará de 6 a 4 meses en junio"*).
+- **Nivel 4 — Advise (Asesorar)**: Propuesta ponderada de alternativas estratégicas (*"Estas son las 3 opciones de optimización con menor impacto en tu calidad de vida"*).
+- **Nivel 5 — Act (Actuar)**: *(Fuera de alcance actual)*. Solo abordable en el futuro bajo estricto consentimiento explícito, límites de gasto inviolables y trazabilidad criptográfica total.
 
 ---
 
@@ -162,8 +280,12 @@ Toda deducción realizada por el sistema (clasificación de comercios, detecció
 ### 4.5. Muro de Privacidad en Espacios Compartidos (RN-07)
 En el modelo colaborativo, el espacio individual de un usuario es hermético: ninguna transacción, cuenta, saldo o inversión personal es accesible para los demás integrantes del grupo sin una asignación explícita e inequívoca al espacio compartido.
 
-### 4.6. Imparcialidad Algorítmica de Nexus Aura (RN-08)
-El copiloto Nexus Aura se rige por una política de cero conflictos de interés. Queda prohibida la recomendación sesgada de productos bancarios, créditos o seguros patrocinados por terceros.
+### 4.6. Imparcialidad Algorítmica y Gobernanza de Nexus Aura (RN-08 / Reglas RA-01 a RA-08)
+El copiloto Nexus Aura se rige por una política de cero conflictos de interés y soberanía del usuario:
+- **Sin comisiones ni patrocinadores (RN-08 / RA-05)**: Queda prohibida la recomendación sesgada de productos bancarios, créditos o seguros de terceros.
+- **Inviolabilidad del Ledger (RA-01 / RA-04)**: Aura no altera registros contables ni ejecuta transacciones de forma autónoma.
+- **Trazabilidad contra alucinaciones (RA-02 / RA-03 / RA-08)**: Toda conclusión expone su cadena de evidencia y declara explícitamente sus hipótesis e incertidumbres.
+- **Muro de Privacidad Contextual (RA-06)**: Las deducciones y análisis de Aura respetan el aislamiento estricto entre el espacio privado y los espacios compartidos.
 
 ---
 
