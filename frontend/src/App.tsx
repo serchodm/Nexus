@@ -8,6 +8,7 @@ import { WealthPage } from './pages/WealthPage';
 import { SimulatorPage } from './pages/SimulatorPage';
 import { AuraPage } from './pages/AuraPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { BankCallbackPage } from './pages/BankCallbackPage';
 import { LoginPage } from './pages/LoginPage';
 
 export default function App() {
@@ -56,6 +57,7 @@ export default function App() {
         <Route path="/simulator" element={<SimulatorPage />} />
         <Route path="/aura" element={<AuraPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/banking/callback" element={<BankCallbackPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -27,6 +27,8 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<SharedSpaceMember> SharedSpaceMembers => Set<SharedSpaceMember>();
     public DbSet<SharedExpenseEntry> SharedExpenseEntries => Set<SharedExpenseEntry>();
     public DbSet<SharedSettlement> SharedSettlements => Set<SharedSettlement>();
+    public DbSet<BankConnection> BankConnections => Set<BankConnection>();
+    public DbSet<ConnectedBankAccount> ConnectedBankAccounts => Set<ConnectedBankAccount>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

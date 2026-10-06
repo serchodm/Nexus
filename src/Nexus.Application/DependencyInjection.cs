@@ -70,6 +70,14 @@ public static class DependencyInjection
         services.AddScoped<Nexus.Application.SharedExpenses.Queries.GetActiveSharedSpaceQueryHandler>();
         services.AddScoped<Nexus.Application.SharedExpenses.Queries.GetPendingExpensesQueryHandler>();
 
+        // Casos de uso de sincronización bancaria automática (005-open-banking-enable-banking)
+        services.AddScoped<Nexus.Application.Banking.Commands.StartBankAuthSessionCommandHandler>();
+        services.AddScoped<Nexus.Application.Banking.Commands.CompleteBankAuthCallbackCommandHandler>();
+        services.AddScoped<Nexus.Application.Banking.Commands.SyncBankConnectionCommandHandler>();
+        services.AddScoped<Nexus.Application.Banking.Commands.RevokeBankConnectionCommandHandler>();
+        services.AddScoped<Nexus.Application.Banking.Queries.GetBankConnectionsQueryHandler>();
+        services.AddScoped<Nexus.Application.Banking.Queries.GetSupportedInstitutionsQueryHandler>();
+
         return services;
     }
 }

@@ -50,6 +50,8 @@ public static class DependencyInjection
         services.AddScoped<ISharedSpaceRepository, SharedSpaceRepository>();
         services.AddScoped<ISharedExpenseRepository, SharedExpenseRepository>();
         services.AddScoped<ISharedSettlementRepository, SharedSettlementRepository>();
+        services.AddScoped<IBankConnectionRepository, BankConnectionRepository>();
+        services.AddScoped<IConnectedBankAccountRepository, ConnectedBankAccountRepository>();
 
         // Servicios de Seguridad y Autenticación (Fase 3)
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
@@ -58,6 +60,12 @@ public static class DependencyInjection
         services.AddSingleton<ISecretEncryptionService, AesGcmEncryptionService>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
         services.AddHttpClient<IPayPalApiClient, PayPalApiClient>();
+
+        // Open Banking: Enable Banking
+        services.Configure<Nexus.Infrastructure.Services.Banking.EnableBankingOptions>(
+            configuration.GetSection(Nexus.Infrastructure.Services.Banking.EnableBankingOptions.SectionName));
+        services.AddHttpClient<Nexus.Domain.Interfaces.IEnableBankingClient, Nexus.Infrastructure.Services.Banking.EnableBankingClient>();
+        services.AddHostedService<Nexus.Infrastructure.Services.Banking.EnableBankingSyncWorker>();
 
         // Configuración de Autenticación JWT Bearer
         var jwtKey = configuration["Jwt:Key"] 

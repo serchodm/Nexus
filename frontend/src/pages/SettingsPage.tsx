@@ -15,6 +15,7 @@ import {
 import { SUPPORTED_LANGUAGES, changeLanguage, type SupportedLanguageCode } from '../i18n';
 import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 import { useSharedSpace } from '../hooks/useSharedSpace';
+import { ConnectedBanksCard } from '../components/banking/ConnectedBanksCard';
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -205,7 +206,10 @@ export function SettingsPage() {
         </div>
       </section>
 
-      {/* Section 2: Display & Internationalization (5 World Languages) */}
+      {/* Section 2: Open Banking Connected Banks */}
+      <ConnectedBanksCard />
+
+      {/* Section 3: Display & Internationalization (5 World Languages) */}
       <section className="glass-panel" style={{
         padding: 'var(--space-lg)',
         borderRadius: 'var(--radius-xl)',

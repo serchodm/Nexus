@@ -133,6 +133,87 @@ namespace Nexus.Infrastructure.Migrations
                     b.ToTable("bank_accounts", (string)null);
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.BankConnection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("ConsentExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("consent_expires_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("EncryptedAccessToken")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_access_token");
+
+                    b.Property<string>("EncryptedRefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_refresh_token");
+
+                    b.Property<string>("ExternalSessionId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("external_session_id");
+
+                    b.Property<string>("InstitutionCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("institution_code");
+
+                    b.Property<string>("InstitutionName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("institution_name");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTimeOffset?>("LastSyncedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_synced_at");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("logo_url");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_bank_connections");
+
+                    b.HasIndex("ExternalSessionId")
+                        .HasDatabaseName("ix_bank_connections_external_session_id");
+
+                    b.HasIndex("UserId", "Status")
+                        .HasDatabaseName("ix_bank_connections_user_id_status");
+
+                    b.ToTable("bank_connections", (string)null);
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.BankTransaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1106,6 +1187,89 @@ namespace Nexus.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.ConnectedBankAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AccountName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("account_name");
+
+                    b.Property<decimal?>("AvailableBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("available_balance");
+
+                    b.Property<DateTimeOffset?>("BalanceUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("balance_updated_at");
+
+                    b.Property<Guid>("BankConnectionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bank_connection_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<decimal?>("CurrentBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("current_balance");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("ExternalAccountId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("external_account_id");
+
+                    b.Property<string>("Iban")
+                        .HasMaxLength(34)
+                        .HasColumnType("character varying(34)")
+                        .HasColumnName("iban");
+
+                    b.Property<Guid?>("InternalBankAccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("internal_bank_account_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_connected_bank_accounts");
+
+                    b.HasIndex("BankConnectionId")
+                        .HasDatabaseName("ix_connected_bank_accounts_bank_connection_id");
+
+                    b.HasIndex("ExternalAccountId")
+                        .HasDatabaseName("ix_connected_bank_accounts_external_account_id");
+
+                    b.HasIndex("InternalBankAccountId")
+                        .HasDatabaseName("ix_connected_bank_accounts_internal_bank_account_id");
+
+                    b.ToTable("connected_bank_accounts", (string)null);
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceConnection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2060,6 +2224,18 @@ namespace Nexus.Infrastructure.Migrations
                         .HasConstraintName("fk_bank_accounts_users_user_id");
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.BankConnection", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bank_connections_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.BankTransaction", b =>
                 {
                     b.HasOne("Nexus.Domain.Entities.BankAccount", "BankAccount")
@@ -2151,6 +2327,26 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("ParentCategory");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.ConnectedBankAccount", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankConnection", "BankConnection")
+                        .WithMany("Accounts")
+                        .HasForeignKey("BankConnectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_connected_bank_accounts_bank_connections_bank_connection_id");
+
+                    b.HasOne("Nexus.Domain.Entities.BankAccount", "InternalBankAccount")
+                        .WithMany()
+                        .HasForeignKey("InternalBankAccountId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_connected_bank_accounts_bank_accounts_internal_bank_account");
+
+                    b.Navigation("BankConnection");
+
+                    b.Navigation("InternalBankAccount");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.ExternalCommerceConnection", b =>
@@ -2388,6 +2584,11 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("Imports");
 
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.BankConnection", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.BankTransaction", b =>

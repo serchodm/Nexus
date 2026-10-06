@@ -323,3 +323,136 @@ public class FakeExternalCommerceConnectionRepository : IExternalCommerceConnect
     }
 }
 
+public class FakeBankConnectionRepository : IBankConnectionRepository
+{
+    public readonly Dictionary<Guid, BankConnection> Connections = new();
+
+    public Task<BankConnection?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        Connections.TryGetValue(id, out var conn);
+        return Task.FromResult(conn);
+    }
+
+    public Task<BankConnection?> GetBySessionIdAsync(string externalSessionId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Connections.Values.FirstOrDefault(c => c.ExternalSessionId == externalSessionId));
+    }
+
+    public Task<List<BankConnection>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Connections.Values.Where(c => c.UserId == userId).ToList());
+    }
+
+    public Task<List<BankConnection>> GetActiveConnectionsAsync(CancellationToken ct = default)
+    {
+        return Task.FromResult(Connections.Values.Where(c => c.Status == Domain.Enums.BankConnectionStatus.Active).ToList());
+    }
+
+    public Task AddAsync(BankConnection connection, CancellationToken ct = default)
+    {
+        Connections[connection.Id] = connection;
+        return Task.CompletedTask;
+    }
+
+    public void Update(BankConnection connection)
+    {
+        Connections[connection.Id] = connection;
+    }
+
+    public void Delete(BankConnection connection)
+    {
+        Connections.Remove(connection.Id);
+    }
+}
+
+public class FakeConnectedBankAccountRepository : IConnectedBankAccountRepository
+{
+    public readonly Dictionary<Guid, ConnectedBankAccount> Accounts = new();
+
+    public Task<ConnectedBankAccount?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        Accounts.TryGetValue(id, out var acc);
+        return Task.FromResult(acc);
+    }
+
+    public Task<ConnectedBankAccount?> GetByExternalAccountIdAsync(string externalAccountId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Accounts.Values.FirstOrDefault(a => a.ExternalAccountId == externalAccountId));
+    }
+
+    public Task<List<ConnectedBankAccount>> GetByBankConnectionIdAsync(Guid bankConnectionId, CancellationToken ct = default)
+    {
+        return Task.FromResult(Accounts.Values.Where(a => a.BankConnectionId == bankConnectionId).ToList());
+    }
+
+    public Task AddAsync(ConnectedBankAccount account, CancellationToken ct = default)
+    {
+        Accounts[account.Id] = account;
+        return Task.CompletedTask;
+    }
+
+    public void Update(ConnectedBankAccount account)
+    {
+        Accounts[account.Id] = account;
+    }
+
+    public void Delete(ConnectedBankAccount account)
+    {
+        Accounts.Remove(account.Id);
+    }
+}
+
+public class FakeEnableBankingClient : Domain.Interfaces.IEnableBankingClient
+{
+    public List<Domain.Interfaces.SupportedInstitution> MockInstitutions { get; set; } = new()
+    {
+        new("bbva_es", "BBVA", null, "ES"),
+        new("ing_es", "ING Direct", null, "ES")
+    };
+
+    public List<Domain.Interfaces.DiscoveredAccount> DiscoveredAccounts { get; set; } = new()
+    {
+        new("ext_acc_1", "ES9121000418450200051332", "Cuenta Online", "EUR", 1500m, 1500m)
+    };
+
+    public List<Domain.Interfaces.RawBankTransaction> TransactionsToReturn { get; set; } = new();
+
+    public Task<IReadOnlyList<Domain.Interfaces.SupportedInstitution>> GetSupportedInstitutionsAsync(string country, CancellationToken ct = default)
+    {
+        return Task.FromResult<IReadOnlyList<Domain.Interfaces.SupportedInstitution>>(MockInstitutions);
+    }
+
+    public Task<Domain.Interfaces.StartSessionResult> StartAuthSessionAsync(string institutionCode, string redirectUri, CancellationToken ct = default)
+    {
+        return Task.FromResult(new Domain.Interfaces.StartSessionResult(
+            $"https://mock-bank.com/auth?code={institutionCode}",
+            "eb_sess_test_123"
+        ));
+    }
+
+    public Task<Domain.Interfaces.AuthorizedSessionResult> CompleteAuthSessionAsync(string code, string sessionId, CancellationToken ct = default)
+    {
+        return Task.FromResult(new Domain.Interfaces.AuthorizedSessionResult(
+            sessionId,
+            DateTimeOffset.UtcNow.AddDays(180),
+            DiscoveredAccounts
+        ));
+    }
+
+    public Task<IReadOnlyList<Domain.Interfaces.RawBankTransaction>> GetTransactionsAsync(string accountId, DateOnly fromDate, CancellationToken ct = default)
+    {
+        return Task.FromResult<IReadOnlyList<Domain.Interfaces.RawBankTransaction>>(TransactionsToReturn);
+    }
+
+    public Task<Domain.Interfaces.AccountBalance> GetBalancesAsync(string accountId, CancellationToken ct = default)
+    {
+        return Task.FromResult(new Domain.Interfaces.AccountBalance(
+            accountId,
+            1500m,
+            1500m,
+            "EUR",
+            DateTimeOffset.UtcNow
+        ));
+    }
+}
+
