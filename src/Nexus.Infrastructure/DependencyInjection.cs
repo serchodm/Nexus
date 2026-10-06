@@ -47,6 +47,9 @@ public static class DependencyInjection
         services.AddScoped<IExternalCommerceOrderRepository, ExternalCommerceOrderRepository>();
         services.AddScoped<ITransactionReconciliationRepository, TransactionReconciliationRepository>();
         services.AddScoped<IExternalCommerceConnectionRepository, ExternalCommerceConnectionRepository>();
+        services.AddScoped<ISharedSpaceRepository, SharedSpaceRepository>();
+        services.AddScoped<ISharedExpenseRepository, SharedExpenseRepository>();
+        services.AddScoped<ISharedSettlementRepository, SharedSettlementRepository>();
 
         // Servicios de Seguridad y Autenticación (Fase 3)
         services.AddSingleton<ITokenGenerator, TokenGenerator>();

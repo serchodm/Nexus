@@ -1425,6 +1425,315 @@ namespace Nexus.Infrastructure.Migrations
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedExpenseEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("BankTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bank_transaction_id");
+
+                    b.Property<string>("CategoryIcon")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("category_icon");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal>("OwedShare")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("owed_share");
+
+                    b.Property<Guid>("PaidByMemberId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("paid_by_member_id");
+
+                    b.Property<decimal>("PaidByShare")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("paid_by_share");
+
+                    b.Property<Guid?>("SettlementId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("settlement_id");
+
+                    b.Property<Guid>("SharedSpaceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("shared_space_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("total_amount");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("transaction_date");
+
+                    b.Property<Guid?>("TransactionSplitItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("transaction_split_item_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_shared_expense_entries");
+
+                    b.HasIndex("BankTransactionId")
+                        .HasDatabaseName("ix_shared_expense_entries_bank_tx_id");
+
+                    b.HasIndex("PaidByMemberId")
+                        .HasDatabaseName("ix_shared_expense_entries_paid_by_member_id");
+
+                    b.HasIndex("SettlementId")
+                        .HasDatabaseName("ix_shared_expense_entries_settlement_id");
+
+                    b.HasIndex("TransactionSplitItemId")
+                        .HasDatabaseName("ix_shared_expense_entries_transaction_split_item_id");
+
+                    b.HasIndex("SharedSpaceId", "Status")
+                        .HasDatabaseName("ix_shared_expense_entries_space_status");
+
+                    b.ToTable("shared_expense_entries", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSettlement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("LinkedTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("linked_transaction_id");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("integer")
+                        .HasColumnName("method");
+
+                    b.Property<Guid>("PayerMemberId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("payer_member_id");
+
+                    b.Property<Guid>("ReceiverMemberId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("receiver_member_id");
+
+                    b.Property<string>("ReferenceCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("reference_code");
+
+                    b.Property<DateTimeOffset>("SettledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("settled_at");
+
+                    b.Property<Guid>("SharedSpaceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("shared_space_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_shared_settlements");
+
+                    b.HasIndex("LinkedTransactionId")
+                        .HasDatabaseName("ix_shared_settlements_linked_transaction_id");
+
+                    b.HasIndex("PayerMemberId")
+                        .HasDatabaseName("ix_shared_settlements_payer_member_id");
+
+                    b.HasIndex("ReceiverMemberId")
+                        .HasDatabaseName("ix_shared_settlements_receiver_member_id");
+
+                    b.HasIndex("SharedSpaceId")
+                        .HasDatabaseName("ix_shared_settlements_space_id");
+
+                    b.ToTable("shared_settlements", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSpace", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<decimal>("DefaultMemberPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("default_member_percentage");
+
+                    b.Property<decimal>("DefaultOwnerPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("default_owner_percentage");
+
+                    b.Property<int>("DefaultSplitRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("default_split_rule");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_shared_spaces");
+
+                    b.ToTable("shared_spaces", (string)null);
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSpaceMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AvatarColor")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("avatar_color");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal?>("DeclaredMonthlyIncome")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("declared_monthly_income");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Initials")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("initials");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
+
+                    b.Property<Guid>("SharedSpaceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("shared_space_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_shared_space_members");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_shared_space_members_user_id");
+
+                    b.HasIndex("SharedSpaceId", "UserId")
+                        .HasDatabaseName("ix_shared_space_members_space_user");
+
+                    b.ToTable("shared_space_members", (string)null);
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.StatementImport", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1900,6 +2209,109 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedExpenseEntry", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "BankTransaction")
+                        .WithMany()
+                        .HasForeignKey("BankTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_shared_expense_entries_bank_transactions_bank_transaction_id");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSpaceMember", "PaidByMember")
+                        .WithMany()
+                        .HasForeignKey("PaidByMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_expense_entries_shared_space_members_paid_by_member_");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSettlement", "Settlement")
+                        .WithMany("SettledExpenses")
+                        .HasForeignKey("SettlementId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_shared_expense_entries_shared_settlements_settlement_id");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSpace", "SharedSpace")
+                        .WithMany("Expenses")
+                        .HasForeignKey("SharedSpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_expense_entries_shared_spaces_shared_space_id");
+
+                    b.HasOne("Nexus.Domain.Entities.TransactionSplitItem", "TransactionSplitItem")
+                        .WithMany()
+                        .HasForeignKey("TransactionSplitItemId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_shared_expense_entries_transaction_split_items_transaction_");
+
+                    b.Navigation("BankTransaction");
+
+                    b.Navigation("PaidByMember");
+
+                    b.Navigation("Settlement");
+
+                    b.Navigation("SharedSpace");
+
+                    b.Navigation("TransactionSplitItem");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSettlement", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.BankTransaction", "LinkedTransaction")
+                        .WithMany()
+                        .HasForeignKey("LinkedTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_shared_settlements_bank_transactions_linked_transaction_id");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSpaceMember", "PayerMember")
+                        .WithMany()
+                        .HasForeignKey("PayerMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_settlements_shared_space_members_payer_member_id");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSpaceMember", "ReceiverMember")
+                        .WithMany()
+                        .HasForeignKey("ReceiverMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_settlements_shared_space_members_receiver_member_id");
+
+                    b.HasOne("Nexus.Domain.Entities.SharedSpace", "SharedSpace")
+                        .WithMany("Settlements")
+                        .HasForeignKey("SharedSpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_settlements_shared_spaces_shared_space_id");
+
+                    b.Navigation("LinkedTransaction");
+
+                    b.Navigation("PayerMember");
+
+                    b.Navigation("ReceiverMember");
+
+                    b.Navigation("SharedSpace");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSpaceMember", b =>
+                {
+                    b.HasOne("Nexus.Domain.Entities.SharedSpace", "SharedSpace")
+                        .WithMany("Members")
+                        .HasForeignKey("SharedSpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_shared_space_members_shared_spaces_shared_space_id");
+
+                    b.HasOne("Nexus.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_shared_space_members_users_user_id");
+
+                    b.Navigation("SharedSpace");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Nexus.Domain.Entities.StatementImport", b =>
                 {
                     b.HasOne("Nexus.Domain.Entities.BankAccount", "BankAccount")
@@ -1997,6 +2409,20 @@ namespace Nexus.Infrastructure.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Reconciliations");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSettlement", b =>
+                {
+                    b.Navigation("SettledExpenses");
+                });
+
+            modelBuilder.Entity("Nexus.Domain.Entities.SharedSpace", b =>
+                {
+                    b.Navigation("Expenses");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("Settlements");
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.StatementImport", b =>

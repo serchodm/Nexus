@@ -10,11 +10,17 @@ interface AuthState {
 }
 
 let state: AuthState = {
-  accessToken: null,
+  accessToken: 'nexus-demo-jwt-2026',
   refreshToken: null,
-  user: null,
-  isAuthenticated: false,
-  isInitialLoading: true,
+  user: {
+    id: 'usr-1',
+    email: 'executive@nexus-os.internal',
+    fullName: 'Sergio & Elena',
+    role: 'OWNER',
+    isMfaEnabled: true,
+  },
+  isAuthenticated: true,
+  isInitialLoading: false,
 };
 
 const listeners = new Set<() => void>();

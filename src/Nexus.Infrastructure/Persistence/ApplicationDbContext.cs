@@ -23,6 +23,10 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<ExternalCommerceOrderItem> ExternalCommerceOrderItems => Set<ExternalCommerceOrderItem>();
     public DbSet<TransactionReconciliation> TransactionReconciliations => Set<TransactionReconciliation>();
     public DbSet<ExternalCommerceConnection> ExternalCommerceConnections => Set<ExternalCommerceConnection>();
+    public DbSet<SharedSpace> SharedSpaces => Set<SharedSpace>();
+    public DbSet<SharedSpaceMember> SharedSpaceMembers => Set<SharedSpaceMember>();
+    public DbSet<SharedExpenseEntry> SharedExpenseEntries => Set<SharedExpenseEntry>();
+    public DbSet<SharedSettlement> SharedSettlements => Set<SharedSettlement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

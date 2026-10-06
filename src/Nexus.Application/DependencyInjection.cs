@@ -63,6 +63,13 @@ public static class DependencyInjection
         services.AddScoped<Nexus.Application.Commerce.Queries.GetPendingReconciliationsQueryHandler>();
         services.AddScoped<Nexus.Application.Commerce.Queries.GetCommerceOrdersQueryHandler>();
 
+        // Casos de uso de espacios compartidos y finanzas en pareja (004-shared-expenses)
+        services.AddScoped<Nexus.Application.SharedExpenses.Commands.ShareTransactionCommandHandler>();
+        services.AddScoped<Nexus.Application.SharedExpenses.Commands.SettleBalanceCommandHandler>();
+        services.AddScoped<Nexus.Application.SharedExpenses.Commands.UpdateSplitConfigurationCommandHandler>();
+        services.AddScoped<Nexus.Application.SharedExpenses.Queries.GetActiveSharedSpaceQueryHandler>();
+        services.AddScoped<Nexus.Application.SharedExpenses.Queries.GetPendingExpensesQueryHandler>();
+
         return services;
     }
 }
