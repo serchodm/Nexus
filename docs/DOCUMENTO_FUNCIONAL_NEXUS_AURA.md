@@ -133,11 +133,13 @@ quadrantChart
    - Clasificación inteligente de conceptos Bizum (`BizumConceptClassifier`).
    - Motor jerárquico de categorías y reglas definidas por el usuario.
    - *Split Engine* con desglose de tickets mixtos a balance cero.
-3. **Espacios Compartidos y Finanzas en Pareja**:
-   - Espacio Privado individual + Espacio Compartido colaborativo.
-   - Algoritmo de reparto **Fair-Share** (50/50 o proporcional a ingresos declarados, ej. 55/45).
-   - Cálculo dinámico del balance bilateral consolidado.
-   - Liquidación en un tap vía Bizum con reseteo de deuda a $0.00\text{ \euro}$.
+3. **Espacios Compartidos Dinámicos y Finanzas Multigrupo (Hogar, Viajes, Amigos, Proyectos)**:
+   - Coexistencia de $N$ espacios independientes: permanentes de convivencia (hogar/pareja/piso) vs. temporales de ocio (viajes en pareja, escapadas con amigos, eventos).
+   - Soporte para $N$ participantes ($N \ge 2$) con miembros registrados y miembros sombra/invitados (con teléfono para Bizum).
+   - Modalidades avanzadas de reparto: equitativo ($1/M$), porcentajes, importes exactos, partes/shares, exclusiones y Fair-Share proporcional a ingresos.
+   - Algoritmo de minimización de transferencias (*Debt Simplification*) para liquidar deudas colectivas con el menor número de pagos.
+   - Desacoplamiento contable: las partidas de un viaje no contaminan el presupuesto ordinario del hogar.
+   - Liquidación en un tap vía Bizum con extinción de balance a $0.00\text{ \euro}$.
 4. **Patrimonio Neto Multiactivo (Wealth Tracking)**:
    - Consolidación de cuentas corrientes, depósitos, inversiones y planes de pensiones.
    - Módulo inmobiliario y vehículos con amortización.
@@ -228,23 +230,26 @@ sequenceDiagram
 
 ---
 
-### 3.4. Espacio Compartido, Reparto Fair-Share y Muro de Privacidad
+### 3.4. Espacios Compartidos Dinámicos, N-Grupos, Fair-Share y Simplificación de Deudas
 
-La joya del Océano Azul de Nexus. Permite la convivencia financiera sin invadir la intimidad de ninguna de las partes.
+Permite gestionar de forma desacoplada tanto la convivencia cotidiana como los proyectos temporales (viajes en pareja, vacaciones con amigos o eventos puntuales) sin invadir la privacidad individual ni mezclar balances:
 
 ```mermaid
 flowchart TD
-    GastoBancario["Pago Bancario:<br/>'IKEA MOBILIARIO' 240,00 € (Pagado por Sergio)"] --> Drawer[Abrir Drawer de Imputación Compartida]
-    Drawer --> ConfigRatio{Selección de Reparto}
-    ConfigRatio -- 50/50 --> Split1["Sergio: 120,00 € | Elena: 120,00 €"]
-    ConfigRatio -- "Fair-Share (55/45)" --> Split2["Sergio (55%): 132,00 €<br/>Elena (45%): 108,00 €"]
-    
-    Split2 --> Contabilidad["Contabilidad de Sergio:<br/>• Gasto Real Hogar: 132,00 €<br/>• Activo/Receivable (Elena me debe): 108,00 €"]
-    Contabilidad --> Ledger["Shared Ledger:<br/>Balance Neto: 'Elena debe 108,00 € a Sergio'"]
-    
-    Ledger --> SettleEvent[Elena hace clic en 'Saldar vía Bizum']
-    SettleEvent --> BizumTrigger[Se genera referencia Bizum: 'NEXUS-SETTLE-108']
-    BizumTrigger --> OffsetDebt[Compensación automática: Balance extinto a 0.00 €]
+    subgraph Contextos ["N Espacios Compartidos Independientes"]
+        E1["🏡 Espacio Hogar (Pareja)<br/>Gastos recurrentes, 55/45 Fair-Share"]
+        E2["✈️ Viaje a Roma (Pareja)<br/>Presupuesto acotado, 50/50"]
+        E3["🍻 Salida con Amigos (5 personas)<br/>Cena / Casa rural, 1/N o Exclusión"]
+    end
+
+    GastoBancario["Pago Bancario:<br/>'RESTAURANTE ROMA' 120,00 € (Pagado por Sergio)"] --> Drawer[Abrir Drawer de Imputación]
+    Drawer --> SelectSpace{¿A qué espacio pertenece?}
+    SelectSpace -->|Viaje a Roma| RomaFlow["Imputar a 'Viaje a Roma'<br/>(No contamina gastos corrientes de Hogar)"]
+    SelectSpace -->|Amigos| AmigosFlow["Imputar a 'Cena Amigos'<br/>(Desmarcar a Marcos que no asistió)"]
+
+    AmigosFlow --> SplitCalc["MultiMemberSplitCalculator:<br/>Total 120 € entre 4 miembros = 30 € c/u<br/>(Invariante RN-01: 30*4 = 120.00 €)"]
+    SplitCalc --> DebtGraph["DebtSimplificationGraphService:<br/>Minimiza transferencias entre los 5 miembros"]
+    DebtGraph --> SettlePlan["Plan de Liquidación:<br/>Elena paga 30 € a Sergio vía Bizum<br/>Marcos: 0.00 € | Carlos: saldado"]
 ```
 
 ---
@@ -396,57 +401,58 @@ A continuación se presentan los esquemas visuales (*wireframes*) interactivos d
 
 ---
 
-### 4.3. Mock 3: Espacio Compartido (Pareja/Hogar), Fair-Share y Settle Up Bizum
+### 4.3. Mock 3: Espacios Compartidos Dinámicos (Hub Multigrupo, N-Miembros y Settle Up)
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│  ESPACIO COMPARTIDO: HOGAR SERGIO & ELENA                 [⚙️ Configuración] [👤 Sergio / 👤 Elena]│
+│  ESPACIOS COMPARTIDOS & GRUPOS DE GASTO                                  [+ Crear Nuevo Espacio] │
 ├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  SELECTOR DE ESPACIO ACTIVO:                                                                     │
+│  [🏡 Hogar Pareja (+170,61 €)]  [✈️ Viaje a Roma (+45,00 €) ●]  [🍻 Cena Amigos (0 €)]  [Ver Todos]│
+│  💰 Saldo neto global en todos tus grupos: +215,61 € a tu favor (Receivables totales)            │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ESPACIO ACTIVO: ✈️ VIAJE A ROMA (4 MIEMBROS)              [⚙️ Configuración] [👥 Ver Participantes]│
+│  Participantes: 👤 Sergio (Tú) · 👤 Elena · 👤 Carlos · 👤 Marcos (Invitado)                     │
 │                                                                                                  │
 │   ┌───────────────────────────────────────────────────────────────────────────────────────────┐  │
-│   │  BALANCE NETO CONSOLIDADO BILATERAL                                                       │  │
-│   │                                                                                           │  │
-│   │         Elena te debe:   170,61 €                                                         │  │
-│   │         (Cálculo proporcional Fair-Share: Sergio 55% / Elena 45%)                         │  │
-│   │                                                                                           │  │
-│   │         [ 📲 Saldar Deuda vía Bizum ]           [ 📝 Registrar Gasto Manual ]             │  │
+│   │  POSICIÓN NETA EN ESTE GRUPO:   +45,00 € (A tu favor)                                      │  │
+│   │  PLAN DE LIQUIDACIÓN SIMPLIFICADA (Min-Cash-Flow Graph):                                  │  │
+│   │  • Elena te debe: 45,00 €   ─────────── [ 📲 Enviar Recordatorio Bizum ]                 │  │
+│   │  • Carlos debe 30,00 € a Marcos (Liquidación interna entre otros miembros)                │  │
+│   │  (Deudas minimizadas: 2 pagos en lugar de 6 transferencias cruzadas)                      │  │
 │   └───────────────────────────────────────────────────────────────────────────────────────────┘  │
 │                                                                                                  │
-│  MURO DE PRIVACIDAD ZERO-KNOWLEDGE:                                                              │
-│  🔒 Los miembros solo ven los gastos imputados a este espacio común. Cuentas personales,        │
-│     nóminas y carteras de inversión individuales son 100% invisibles y confidenciales.           │
-│                                                                                                  │
-│  HISTORIAL DE PARTIDAS COMPARTIDAS EN EL MES:                                                    │
+│  HISTORIAL DE PARTIDAS DEL VIAJE:                                       [ + Imputar Nuevo Gasto ]│
 │  ──────────────────────────────────────────────────────────────────────────────────────────────  │
-│  FECHA       DESCRIPCIÓN              PAGADO POR     TOTAL      TU CUOTA (55%)   CUOTA ELENA (45%)│
-│  06/10/2026  Mercadona Compra Semanal Sergio         120,00 €   66,00 €          54,00 €          │
-│  05/10/2026  Factura Luz Iberdrola    Sergio         110,61 €   60,84 €          49,77 €          │
-│  02/10/2026  Cena Restaurante         Elena           60,00 €   33,00 €          27,00 €          │
+│  FECHA       CONCEPTO              PAGADO POR     TOTAL      REPARTO / EXCLUSIONES    TU CUOTA   │
+│  06/10/2026  Hotel Trastevere 3N   Sergio         360,00 €   4 miembros (90 € c/u)    90,00 €    │
+│  05/10/2026  Cena Pizzería Roma    Carlos         120,00 €   3 miembros (Excl. Marcos)40,00 €    │
+│  04/10/2026  Entradas Coliseo      Sergio          80,00 €   4 miembros (20 € c/u)    20,00 €    │
 │  ──────────────────────────────────────────────────────────────────────────────────────────────  │
-│                                              TOTALES: 290,61 €  159,84 €         130,77 €         │
-│                                              BALANCE RESULTANTE A FAVOR DE SERGIO: 170,61 €       │
+│  GASTO TOTAL DEL VIAJE: 560,00 € | TÚ HAS PAGADO: 440,00 € | TU CONSUMO REAL: 150,00 €          │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 
                        ┌──────────────────────────────────────────────────┐
-                       │ MODAL: LIQUIDAR BALANCE (SETTLE UP)              │
+                       │ MODAL: PLAN DE LIQUIDACIÓN SIMPLIFICADA          │
                        ├──────────────────────────────────────────────────┤
-                       │ Miembro deudor: Elena                            │
-                       │ Importe exacto de liquidación: 170,61 €          │
-                       │ Método de pago: Bizum / Transferencia Inmediata  │
-                       │ Concepto generado: NEXUS-HOGAR-OCT               │
+                       │ Grupo: ✈️ Viaje a Roma                            │
+                       │ Pagos necesarios para cerrar cuentas a 0.00 €:   │
                        │                                                  │
-                       │ [ Copiar importe y concepto para Bizum ]         │
+                       │ 1. Elena ➔ Sergio:  45,00 €                     │
+                       │    [ 📲 Generar Bizum a Sergio ] (Ref: ROMA-01)  │
                        │                                                  │
-                       │ Una vez recibido el Bizum, pulsa confirmar:      │
-                       │ [Confirmar Liquidación y Resetear a 0,00 €]      │
-                       └────────────────────────────────────────────────┘
+                       │ 2. Carlos ➔ Marcos: 30,00 €                     │
+                       │    [ 📲 Generar Bizum a Marcos ] (Ref: ROMA-02)  │
+                       │                                                  │
+                       │ [Archivar grupo tras liquidación completa]       │
+                       └──────────────────────────────────────────────────┘
 ```
 
-#### Explicación de Componentes del Espacio Compartido:
-1. **Regla de Reparto Fair-Share Dinámica**: Pondera el esfuerzo de cada persona en función de su capacidad económica declarada (ej. 55% Sergio, 45% Elena) sin revelar los importes exactos de las nóminas privadas.
-2. **Consolidación Bilateral Neta**: Compensa automáticamente quién pagó qué, evitando micro-transferencias absurdas; al final del ciclo solo existe una cifra neta única.
-3. **Muro de Privacidad Zero-Knowledge**: Garantiza que convivir financieramente no implique perder la soberanía o privacidad personal.
-4. **Flujo Settle Up**: Proporciona los datos exactos para emitir el Bizum y extingue contablemente la deuda a $0.00\text{ \euro}$.
+#### Explicación de Componentes de Espacios Multigrupo:
+1. **Selector Rápido de Contexto**: Permite alternar entre los gastos permanentes del hogar, viajes acotados en pareja y salidas con amigos con un clic, conociendo el saldo neto de cada uno de un vistazo.
+2. **Repartos con Exclusión**: Si un participante no consume un ticket concreto (ej. Marcos no fue a la cena), la cuota se recalcula automáticamente entre los restantes respetando la Invariante RN-01 de suma exacta ($0.00\text{ \euro}$).
+3. **Algoritmo Min-Cash-Flow de Simplificación**: Reduce el número de transferencias entre los $N$ participantes al mínimo matemático posible, evitando deudas circulares.
+4. **Miembros Invitados / Sombra**: Soporta participantes que no tienen la aplicación instalada pero reciben el recordatorio con el importe exacto y teléfono de Bizum.
 
 ---
 
@@ -556,6 +562,7 @@ erDiagram
     SHARED_SPACES ||--o{ SHARED_SPACE_MEMBERS : includes
     SHARED_SPACES ||--o{ SHARED_EXPENSE_ENTRIES : contains
     SHARED_SPACES ||--o{ SHARED_SETTLEMENTS : resolves
+    SHARED_EXPENSE_ENTRIES ||--o{ SHARED_EXPENSE_SPLIT_ITEMS : details
 
     BANK_TRANSACTIONS {
         uuid id PK
@@ -584,9 +591,18 @@ erDiagram
         uuid transaction_id FK
         uuid paid_by_member_id FK
         decimal total_amount
-        decimal payer_share
-        decimal debtor_share
+        varchar split_mode
         varchar status
+    }
+
+    SHARED_EXPENSE_SPLIT_ITEMS {
+        uuid id PK
+        uuid shared_expense_entry_id FK
+        uuid member_id FK
+        decimal owed_amount
+        decimal percentage_applied
+        decimal shares_count
+        boolean is_payer
     }
 ```
 
@@ -595,10 +611,12 @@ erDiagram
    $$\text{Saldo}_{t} = \text{Saldo}_{t-1} + \text{Movimiento}_{t}$$
 2. **Invariante de Split Exacto ($0.00\text{ \euro}$)**:
    $$\text{Importe Original} = \sum_{i=1}^{n} \text{Importe Partida}_i$$
-3. **Invariante de Reparto Compartido**:
-   $$\text{Total Gasto} = \text{Cuota Pagador} + \text{Cuota Deudor}$$
-4. **Invariante de Extinción Bilateral**:
-   $$\text{Balance Neto Resuelto} + \text{Bizum de Liquidación} = 0.00\text{ \euro}$$
+3. **Invariante de Reparto Multimiembro**:
+   $$\text{Total Gasto} = \sum_{i=1}^{M} \text{Cuota}_i \quad (\text{Tolerancia: } 0.00\text{ \euro})$$
+4. **Invariante de Balance Cero Colectivo**:
+   $$\sum_{m \in \text{Miembros}} \text{Balance Neto}(m) \equiv 0.00\text{ \euro}$$
+5. **Invariante de Extinción Bilateral / Grupal**:
+   $$\text{Matriz de Deuda Resuelta} + \sum \text{Liquidaciones Bizum} = 0.00\text{ \euro}$$
 
 ---
 

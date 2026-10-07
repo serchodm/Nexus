@@ -83,15 +83,20 @@ $$\text{Patrimonio Neto} = \sum \text{Activos Ponderados} - \sum \text{Pasivos P
 
 ---
 
-### Pilar 3: Modelo Dual del Gasto y Espacios Compartidos (Privacidad Asimétrica)
-Nexus resuelve la fricción de las finanzas en pareja o de convivencia mediante un modelo de **doble espacio con muro de privacidad estricto**:
+### Pilar 3: Modelo Dual del Gasto y Espacios Compartidos Dinámicos (Privacidad Asimétrica y N-Grupos)
+Nexus resuelve la fricción de las finanzas compartidas mediante un modelo de **doble espacio con muro de privacidad estricto y soporte para N grupos independientes**:
 
 - **Espacio Individual (100% Privado / Soberanía Personal)**:
   - Salario, cuentas personales, inversiones, compras privadas y patrimonio particular son **totalmente invisibles** para otros miembros del grupo.
-- **Espacio Compartido (Hogar, Pareja, Grupos de Gasto)**:
-  - Fondo común de gastos y partidas imputadas explícitamente al espacio común.
-  - Modelo de liquidación inteligente (*Fair-Share*): Reparto equitativo (50/50) o ponderado proporcionalmente a los ingresos de cada parte.
-  - Balance de compensación dinámico (quién debe a quién) y registro de transferencias de liquidación sin necesidad de obligar a abrir cuentas bancarias conjuntas.
+- **Espacios Compartidos Dinámicos ($N$ Espacios y $N$ Miembros)**:
+  - **Tipologías de Espacios Desacoplados**:
+    - *Permanentes de Convivencia*: Gastos ordinarios de pareja o piso compartido (supermercado, luz, alquiler) con reparto 50/50 o *Fair-Share* proporcional a ingresos.
+    - *Temporales / Proyectos*: Viajes de pareja (ej. "Vacaciones Japón"), viajes con amigos o familia aislados del presupuesto habitual para no falsear las métricas de gasto corriente del hogar.
+    - *Eventos Efímeros*: Cenas, barbacoas o botes puntuales que se liquidan y se archivan.
+  - **Repartos Flexibles Multimiembro**: División a partes iguales ($1/M$), porcentajes explícitos, importes fijos, partes/shares o exclusión de miembros no participantes en un ticket concreto.
+  - **Miembros Sombra (Guest Members)**: Participación de amigos y familiares sin cuenta en Nexus mediante teléfono para Bizum.
+  - **Algoritmo de Simplificación de Deudas**: Minimización del grafo de transferencias a un máximo de $N-1$ pagos, resolviendo deudas colectivas sin transferencias circulares.
+  - **Extinción Contable a 0.00 €**: Liquidación ágil vía Bizum sin computar cobros de deudas como ingresos ordinarios.
 
 ---
 
