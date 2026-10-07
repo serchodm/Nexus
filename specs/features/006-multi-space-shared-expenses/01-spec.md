@@ -41,17 +41,22 @@ Esta feature evoluciona el Pilar 3 de Nexus desde un modelo bilateral cerrado ha
 > **Quiero** pulsar "Compartir Gasto" en una compra y seleccionar en un menú desplegable a qué espacio pertenece (Pareja, Viaje o Amigos),  
 > **Para que** el flujo de ingesta desde BBVA o ING alimente el libro compartido correspondiente en 2 clics.
 
-### Historia 4: Algoritmo de simplificación de deudas en grupos grandes
+### Historia 4: Gastos pagados por terceros y deudas a pagar (Payables)
+> **Como** participante de un espacio cuando otra persona adelanta el dinero (ej. Carlos pagó el hotel o Elena pagó la compra),  
+> **Quiero** registrar el gasto indicando que pagó esa persona y ver reflejada mi cuota exacta como saldo deudor ("Tú debes X € a Carlos"),  
+> **Para que** mi balance patrimonial compute ese pasivo pendiente y pueda emitir el Bizum de liquidación con un solo clic sin duplicar gastos.
+
+### Historia 5: Algoritmo de simplificación de deudas en grupos grandes
 > **Como** participante de un grupo de 6 amigos donde varios miembros han pagado cosas distintas,  
 > **Quiero** que Nexus calcule el balance neto de cada uno y me diga exactamente a quién y cuánto tengo que pagar yo con el número mínimo de transferencias,  
 > **Para que** no tengamos que hacer 15 Bizums cruzados y se liquide todo en 2 o 3 pagos.
 
-### Historia 5: Miembros sombra (sin cuenta obligatoria en Nexus)
+### Historia 6: Miembros sombra (sin cuenta obligatoria en Nexus)
 > **Como** organizador de un viaje donde no todos mis amigos usan Nexus,  
 > **Quiero** poder añadir miembros con solo un nombre/apodo y teléfono para Bizum,  
 > **Para que** podamos llevar las cuentas del grupo sin obligar a nadie a descargarse o registrarse en la aplicación.
 
-### Historia 6: Archivo y cierre de grupos efímeros
+### Historia 7: Archivo y cierre de grupos efímeros
 > **Como** usuario tras volver de un viaje o cena ya saldada,  
 > **Quiero** marcar el espacio como "Archivado",  
 > **Para que** deje de aparecer en el selector diario pero conserve su historial contable para consulta futura.
@@ -112,6 +117,11 @@ Los balances, deudas y liquidaciones de un espacio son **estrictamente independi
 ### RN-04 Soberanía de Privacidad
 Un usuario que participa en 4 espacios solo comparte con los integrantes de cada espacio las transacciones asignadas explícitamente a ese espacio. Ningún miembro de un grupo puede inferir ingresos, patrimonio neto o gastos privados de otro miembro.
 
+### RN-05 Tratamiento Contable Dual de Deudas (Receivables vs. Payables)
+- **Posición Acreedora (El usuario pagó)**: El gasto personal computa como consumo, mientras que las cuotas de los demás se reconocen como un **Activo a Corto Plazo (Cuentas por Cobrar / Receivables)** en el patrimonio neto.
+- **Posición Deudora (Un tercero pagó)**: La cuota de consumo del usuario computa como gasto real en su categoría analítica, generándose simultáneamente un **Pasivo a Corto Plazo (Cuentas por Pagar / Payables)** en su balance.
+- **Neutralidad de la Liquidación**: El posterior pago o cobro de Bizum extingue dicho Activo o Pasivo sin distorsionar ingresos salariales ni duplicar partidas de gasto.
+
 ---
 
 ## 5. Criterios de Aceptación (BDD Gherkin)
@@ -133,9 +143,17 @@ Un usuario que participa en 4 espacios solo comparte con los integrantes de cada
   - Sergio pagó 60 € para los tres (20 € cada uno),
   - Carlos pagó 30 € para los tres (10 € cada uno),
   - Elena no ha pagado nada (consumió 30 € en total),
-- **Cuando** se consulta el informe de liquidación simplificada,
-- **Entonces** el algoritmo indica que Elena debe pagar 30 € directamente a Sergio, y Carlos no debe pagar ni recibir nada (balance neto 0 €),
-- **Y** se evita que Elena pague a Carlos y Carlos a Sergio.
+  - **Cuando** se consulta el informe de liquidación simplificada,
+  - **Entonces** el algoritmo indica que Elena debe pagar 30 € directamente a Sergio, y Carlos no debe pagar ni recibir nada (balance neto 0 €),
+  - **Y** se evita que Elena pague a Carlos y Carlos a Sergio.
+
+### Escenario 4: Gasto pagado por un tercero y liquidación de deuda propia (Payable)
+- **Dado que** en el grupo "Viaje a Asturias", Carlos paga un alojamiento rural de 120.00 € con su tarjeta para los 4 miembros (30.00 € cada uno),
+- **Cuando** se registra el gasto con `PaidBy = Carlos`,
+- **Entonces** la posición neta de Sergio pasa a -30.00 € ("Tú debes 30,00 € a Carlos"),
+- **Y** en el balance patrimonial de Sergio se computa un Pasivo a Corto Plazo de 30.00 €,
+- **Y** la interfaz proporciona el botón "Pagar con Bizum a Carlos" con importe de 30.00 € y concepto predefinido,
+- **Y** cuando Sergio realiza el Bizum, Nexus clasifica el movimiento bancario como amortización de pasivo, dejando su deuda con Carlos en 0.00 € sin duplicar el gasto.
 
 ---
 

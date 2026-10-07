@@ -78,6 +78,7 @@ graph TD
 - [ ] **Tarea 4.1**: Pruebas unitarias de `DebtSimplificationGraphService`:
   - Caso clásico de 3 miembros cíclicos ($A \to B \to C \to A$) resolviéndose en 0 transferencias.
   - Caso de viaje de 5 miembros con pagos desiguales resolviéndose en $\le 4$ transferencias.
+  - Caso de deuda neta del usuario activo (un tercero paga el gasto grupal y el usuario queda en posición deudora con propuesta de Bizum).
 - [ ] **Tarea 4.2**: Pruebas unitarias de `MultiMemberSplitCalculator`:
   - Reparto $1/M$ con céntimos huérfanos (ej. 100 € entre 3 personas = 33.34 €, 33.33 €, 33.33 € con suma exacta 100.00 €).
   - Reparto con exclusión de miembros específicos.
