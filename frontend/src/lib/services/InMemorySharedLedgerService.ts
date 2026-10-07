@@ -60,6 +60,7 @@ class InMemorySharedLedger {
       defaultSplitRatio: '55/45',
       netBalance: 170.61, // 60.00 + 110.61 = 170.61 €
       totalSharedThisMonth: 728.29,
+      userPaidThisMonth: 400.56,
       youPaidThisMonth: 400.56,
       partnerPaidThisMonth: 327.73,
       members: DEFAULT_MEMBERS,

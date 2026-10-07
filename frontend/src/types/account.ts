@@ -11,12 +11,13 @@ export const HolderRoleLabels: Record<HolderRole, string> = {
 
 export interface BankAccount {
   id: string;
-  userId: string;
+  userId?: string;
   name: string;
   bankName: string;
   bankCode?: string | null;
   bankType: BankType;
   iban?: string | null;
+  ibanMasked?: string | null;
   last4Digits: string;
   currency: string;
   type: AccountType;

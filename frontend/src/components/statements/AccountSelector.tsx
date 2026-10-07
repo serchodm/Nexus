@@ -198,7 +198,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                   {acc.name}
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 1rem', fontFamily: 'monospace' }}>
-                  {acc.iban ? `**** ${acc.last4Digits}` : `Cuenta terminada en ${acc.last4Digits}`}
+                  {acc.ibanMasked || (acc.iban ? `**** ${acc.last4Digits}` : `Cuenta terminada en ${acc.last4Digits}`)}
                 </p>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

@@ -26,7 +26,7 @@ export function SharedSpacePage() {
   const netBalance = summary.netBalance;
 
   const totalShared = summary.totalSharedThisMonth || 728.29;
-  const youPaid = summary.youPaidThisMonth || 400.56;
+  const youPaid = summary.userPaidThisMonth ?? summary.youPaidThisMonth ?? 400.56;
   const partnerPaid = summary.partnerPaidThisMonth || 327.73;
   const youPaidPct = totalShared > 0 ? Math.round((youPaid / totalShared) * 100) : 55;
 

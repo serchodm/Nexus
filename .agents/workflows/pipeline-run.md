@@ -62,15 +62,12 @@ graph TD
 2. Invoca al subagente `front-test` ejecutando `/opsx-pickup`.
 3. Verifica `npm run lint` y pruebas unitarias de componentes.
 
-### 🔹 Fase 8: Verificación Holística de Regresión (`jarvis`)
-1. `@jarvis` ejecuta la suite de regresión completa de toda la solución:
+### 🔹 Fase 8: Verificación Holística de Regresión (`jarvis` - Zero Tokens)
+1. `@jarvis` ejecuta la auditoría determinista completa de toda la solución:
    ```bash
-   dotnet test tests/Nexus.UnitTests/Nexus.UnitTests.csproj
+   pwsh tests/audit-pipeline.ps1 <feature-id>
    ```
-   ```bash
-   cd frontend && npm run build
-   ```
-2. Si la solución completa pasa sin advertencias ni regresiones, `@jarvis` marca la Feature como completada (Definition of Done alcanzada) y reporta éxito al usuario.
+2. Si el script finaliza con `[AUDIT SUCCESS]` (cero migraciones pendientes en PostgreSQL, 100% de tests en verde y cero errores de tipos en TypeScript), `@jarvis` marca la Feature como completada (Definition of Done alcanzada) y reporta éxito al usuario.
 
 ---
 

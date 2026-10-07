@@ -59,15 +59,12 @@ graph TD
 4. **Verificar Retorno**:
    - Si el especialista completa sus tareas con éxito, verifica que haya marcado los checkboxes en `03-tasks.md` y que haya eliminado su ticket de inbox.
    - Avanza automáticamente a la siguiente fase sin pedir confirmación al usuario.
-5. **Fase 8: Verificación Holística de Regresión (DoD Global)**:
-   - Tras completar la Fase 7, `@jarvis` ejecuta la comprobación completa de la solución:
+5. **Fase 8: Verificación Holística de Regresión (DoD Global con Zero Tokens)**:
+   - Tras completar la Fase 7, `@jarvis` ejecuta la auditoría determinista completa:
      ```bash
-     dotnet test tests/Nexus.UnitTests/Nexus.UnitTests.csproj
+     pwsh tests/audit-pipeline.ps1 <feature-id>
      ```
-     ```bash
-     cd frontend && npm run build
-     ```
-   - Si toda la solución compila y el 100% de los tests pasan, marca la Feature como completada.
+   - Si el script reporta `[AUDIT SUCCESS]` (cero migraciones pendientes en PostgreSQL, 100% de tests en verde y cero discrepancias de contratos en TypeScript), marca la Feature como completada en `03-tasks.md`.
 
 ---
 

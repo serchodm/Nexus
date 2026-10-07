@@ -31,7 +31,8 @@ export interface SharedSpaceSummary {
   defaultSplitRatio: string; // ej. "55/45"
   netBalance: number; // Positivo: pareja te debe dinero; Negativo: debes dinero
   totalSharedThisMonth: number;
-  youPaidThisMonth: number;
+  userPaidThisMonth: number;
+  youPaidThisMonth?: number;
   partnerPaidThisMonth: number;
   members: SharedSpaceMember[];
   pendingExpenses: SharedExpenseEntry[];
