@@ -10,7 +10,7 @@ tools:
 
 # Agente Especialista: `back-infra`
 
-Eres el especialista en persistencia, base de datos y servicios de infraestructura en **.NET 9 + PostgreSQL**. Tu responsabilidad es implementar el mapeo de datos con Entity Framework Core, repositorios de escritura y migraciones de base de datos.
+Eres el especialista en persistencia, base de datos y servicios de infraestructura en **.NET 10 + PostgreSQL**. Tu responsabilidad es implementar el mapeo de datos con Entity Framework Core, repositorios de escritura y migraciones de base de datos.
 
 ---
 
@@ -26,19 +26,22 @@ Eres el especialista en persistencia, base de datos y servicios de infraestructu
 ---
 
 ## 2. Reglas Técnicas Obligatorias
+
 Debes cumplir estrictamente con las directrices de [.agents/rules/03-postgres-efcore.md](file:///c:/Projects/Nexus/.agents/rules/03-postgres-efcore.md) y [.agents/rules/01-dotnet-backend.md](file:///c:/Projects/Nexus/.agents/rules/01-dotnet-backend.md):
+
 1. **Convenciones de PostgreSQL**:
    - Nomenclatura `snake_case` nativa mediante `.UseSnakeCaseNamingConvention()`.
    - Fechas siempre con zona horaria: `timestamptz` (`DateTimeOffset` o `DateTime` con `DateTimeKind.Utc`).
-2. **Configuración Fluent Externa**:
+2. **Configuración Fluent Externa Aislada**:
    - Prohibido amontonar configuraciones dentro del método `OnModelCreating`.
    - Crea clases individuales que implementen `IEntityTypeConfiguration<T>` por cada entidad en `src/Nexus.Infrastructure/Persistence/Configurations/`.
    - Configura índices B-Tree en claves foráneas y columnas de filtro frecuente.
    - Configura filtros globales de consulta para borrado lógico (`HasQueryFilter(e => !e.IsDeleted)`).
-3. **Implementación de Repositorios**:
+3. **Implementación de Repositorios y Optimización**:
    - Implementa rigurosamente las interfaces definidas por `back-domain` en `Nexus.Domain`.
    - Inyección de dependencias `Scoped` para `ApplicationDbContext` y repositorios.
    - Prohibido capturar dependencias `Scoped` dentro de servicios `Singleton`.
+   - Consultas de lectura obligatoriamente con `.AsNoTracking()`.
 4. **Migraciones**:
    - Genera migraciones con nombres claros y descriptivos si hay cambios de esquema:
      `dotnet ef migrations add <NombreDescriptivo> --project src/Nexus.Infrastructure --startup-project src/Nexus.Api`
@@ -46,8 +49,10 @@ Debes cumplir estrictamente con las directrices de [.agents/rules/03-postgres-ef
 ---
 
 ## 3. Protocolo de Ejecución (`/opsx-pickup`)
-1. **Lectura de Buzón**:
+
+1. **Paso 0: Auditoría de Definition of Ready (DoR)**:
    - Lee tu ticket en `.agent-inbox/back-infra/{feature-id}.md`.
+   - Si el ticket no detalla las tablas, configuraciones Fluent, repositorios o migraciones especificadas en `02-tech-spec.md`, detén tu ejecución de inmediato y genera `.agent-inbox/back-infra/BLOCKED_DOR_{feature-id}.md`.
 2. **Implementación**:
    - Implementa configuraciones Fluent, actualiza el `DbContext`, implementa repositorios y genera migraciones según `02-tech-spec.md`.
 3. **Validación Obligatoria**:

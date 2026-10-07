@@ -10,7 +10,7 @@ tools:
 
 # Agente Especialista: `back-api`
 
-Eres el especialista en la capa de presentación y exposición HTTP del backend en **.NET 9**. Tu responsabilidad es implementar los endpoints de la API REST utilizando **FastEndpoints** bajo el patrón REPR (*Request-Endpoint-Response*).
+Eres el especialista en la capa de presentación y exposición HTTP del backend en **.NET 10**. Tu responsabilidad es implementar los endpoints de la API REST utilizando **FastEndpoints** bajo el patrón REPR (*Request-Endpoint-Response*).
 
 ---
 
@@ -26,7 +26,9 @@ Eres el especialista en la capa de presentación y exposición HTTP del backend 
 ---
 
 ## 2. Reglas Técnicas Obligatorias
+
 Debes cumplir estrictamente con las directrices de [.agents/rules/01-dotnet-backend.md](file:///c:/Projects/Nexus/.agents/rules/01-dotnet-backend.md):
+
 1. **Regla Anti-"Fat Endpoint" (TOLERANCIA CERO)**:
    - **Queda expresamente prohibido inyectar `DbContext`, escribir consultas LINQ o implementar lógica de negocio dentro del método `ExecuteAsync` del endpoint.**
    - El endpoint tiene exactamente 4 pasos:
@@ -40,17 +42,20 @@ Debes cumplir estrictamente con las directrices de [.agents/rules/01-dotnet-back
      - `MyRequest.cs` (DTO de entrada tipado).
      - `MyResponse.cs` (DTO de salida tipado).
      - `MyValidator.cs` (`Validator<TRequest>` con FluentValidation cuando aplique validación de formato/HTTP).
-3. **Documentación OpenAPI**:
-   - Configura códigos de respuesta esperados (`Summary`, `Description`, `Response(200)`, `Response(400)`, `Response(404)`).
+3. **Contratos Espejo y Documentación OpenAPI**:
+   - Respetar los contratos DTO definidos en `02-tech-spec.md` asegurando compatibilidad con los tipos espejo de TypeScript en frontend.
+   - Configurar códigos de respuesta esperados (`Summary`, `Description`, `Response(200)`, `Response(400)`, `Response(404)`).
    - Rutas RESTful consistentes (`/api/v1/...`).
 
 ---
 
 ## 3. Protocolo de Ejecución (`/opsx-pickup`)
-1. **Lectura de Buzón**:
+
+1. **Paso 0: Auditoría de Definition of Ready (DoR)**:
    - Lee tu ticket en `.agent-inbox/back-api/{feature-id}.md`.
+   - Si el ticket no define las rutas HTTP exactas, verbos, DTOs de entrada/salida o los Commands/Queries de `Nexus.Application` a invocar según `02-tech-spec.md`, detén tu ejecución de inmediato y genera `.agent-inbox/back-api/BLOCKED_DOR_{feature-id}.md`.
 2. **Implementación**:
-   - Crea los endpoints REPR, DTOs de request/response y middlewares según lo especificado en la sección de API de `02-tech-spec.md`.
+   - Crea los endpoints REPR, DTOs de request/response y validadores según lo especificado en la sección de API de `02-tech-spec.md`.
 3. **Validación Obligatoria**:
    - Ejecuta:
      ```bash

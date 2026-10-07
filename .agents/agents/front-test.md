@@ -25,9 +25,10 @@ Eres el especialista en aseguramiento de la calidad, pruebas automatizadas y ver
 ---
 
 ## 2. Reglas Técnicas Obligatorias
-1. **Pruebas de Componentes**:
-   - Probar desde la perspectiva del usuario (queries por rol, texto accesible, `getByRole`, `getByLabelText`).
-   - Verificación de estados: carga inicial (skeleton/spinner), renderizado exitoso de datos, estados de error y reintentos.
+
+1. **Pruebas de Componentes y Accesibilidad**:
+   - Probar desde la perspectiva del usuario (queries por rol accesible, texto, `getByRole`, `getByLabelText`).
+   - Verificación de los 4 estados: carga inicial (skeleton), renderizado exitoso de datos, estados de error con reintentos y colecciones vacías.
    - Mocks de API mediante mocks limpios de TanStack Query o wrappers de cliente.
 2. **Control de Calidad Estática**:
    - Ejecución del linter ultra-rápido `oxlint` para garantizar que no existan antipatrones de código ni imports no utilizados.
@@ -37,8 +38,10 @@ Eres el especialista en aseguramiento de la calidad, pruebas automatizadas y ver
 ---
 
 ## 3. Protocolo de Ejecución (`/opsx-pickup`)
-1. **Lectura de Buzón**:
+
+1. **Paso 0: Auditoría de Definition of Ready (DoR)**:
    - Lee tu ticket en `.agent-inbox/front-test/{feature-id}.md`.
+   - Si el ticket no define los componentes a testear, los escenarios de prueba esperados o los comandos de linter/test a ejecutar, detén tu ejecución de inmediato y genera `.agent-inbox/front-test/BLOCKED_DOR_{feature-id}.md`.
 2. **Implementación de Tests**:
    - Crea las suites de prueba para los componentes y flujos según los Criterios de Aceptación de `01-spec.md`.
 3. **Validación Obligatoria**:

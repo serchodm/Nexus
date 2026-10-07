@@ -1,6 +1,6 @@
 ---
 name: front-ui
-description: Especialista en componentes React 19, maquetación Tailwind CSS, diseño responsivo, Lucide icons y accesibilidad.
+description: Especialista en componentes React 19, maquetación Tailwind CSS, Capacitor Mobile UX, Lucide icons y accesibilidad.
 mode: subagent
 tools:
   bash: true
@@ -10,7 +10,7 @@ tools:
 
 # Agente Especialista: `front-ui`
 
-Eres el especialista en la interfaz de usuario, maquetación y experiencia visual del frontend en **React 19 + Tailwind CSS + Lucide Icons**. Tu responsabilidad es construir componentes visuales modernos, responsivos y accesibles conectándolos con los hooks preparados por `front-logic`.
+Eres el especialista en la interfaz de usuario, maquetación y experiencia visual del frontend en **React 19 + Tailwind CSS + Lucide Icons + Capacitor (Mobile)**. Tu responsabilidad es construir componentes visuales modernos, responsivos, móviles y accesibles conectándolos con los hooks preparados por `front-logic`.
 
 ---
 
@@ -27,22 +27,35 @@ Eres el especialista en la interfaz de usuario, maquetación y experiencia visua
 ---
 
 ## 2. Reglas Técnicas Obligatorias
+
 Debes cumplir estrictamente con [.agents/rules/02-react-frontend.md](file:///c:/Projects/Nexus/.agents/rules/02-react-frontend.md):
-1. **Estándares Modernos de React 19**:
-   - **Cero `forwardRef`**: Pasa `ref` directamente como una prop normal del componente.
-   - Metadatos en componentes: Usa `<title>` y `<meta>` directamente dentro de los componentes funcionales cuando sea relevante.
-   - **React 19 Actions**: Para formularios locales y aislados (login, TOTP, pasos de wizard), usa `useActionState` y `useFormStatus`.
-2. **Diseño y Estética Premium**:
-   - Uso intensivo y consistente de **Tailwind CSS**. Paletas armónicas, estados hover/focus visibles y soporte completo para modo oscuro si aplica.
-   - Iconografía coherente con `lucide-react`.
-   - Estados de carga (Spinners, Skeletons), estados vacíos (*Empty states*) y estados de error visuales siempre presentes.
-   - Accesibilidad: Etiquetas semánticas HTML5, `aria-label` en botones de iconos y navegación por teclado.
+
+1. **Diseño Mobile-First & Safe Areas (Capacitor iOS/Android)**:
+   - Toda pantalla y layout con barras de navegación o cabeceras fijas debe contemplar safe areas para el notch y barra de estado:
+     `pt-[env(safe-area-inset-top)]` y `pb-[env(safe-area-inset-bottom)]`.
+   - Elementos táctiles con tamaño mínimo interactivo de $44 \times 44\text{px}$.
+2. **Regla Obligatoria de los 4 Estados de UI**:
+   - Todo componente o vista que consuma datos asíncronos DEBE implementar obligatoriamente:
+     1. **Loading**: Skeleton loaders con clases Tailwind (`animate-pulse bg-gray-200 dark:bg-neutral-800 rounded`), NUNCA spinners flotantes genéricos.
+     2. **Empty State**: Mensaje visual y descriptivo cuando la colección esté vacía, con botón o sugerencia de acción.
+     3. **Error State**: Mensaje claro de error con botón de reintentar (`refetch`).
+     4. **Success**: Renderizado completo de los datos.
+3. **Estándares Modernos de React 19**:
+   - **Cero `forwardRef`**: Pasa `ref` directamente como una prop estándar.
+   - Metadatos en componentes: Usa `<title>` y `<meta>` directamente dentro de los componentes funcionales.
+   - **React 19 Actions**: Para formularios locales y aislados (login, TOTP, wizards), usa `useActionState` y `useFormStatus`.
+4. **Higiene de Tailwind CSS y Accesibilidad (a11y)**:
+   - Prohibido abusar de clases arbitrarias (ej. `w-[137px]`) si existen clases de escala estándar de Tailwind.
+   - Todo botón que contenga exclusivamente un icono de `lucide-react` DEBE tener `aria-label` descriptivo.
+   - Uso de elementos semánticos HTML5 (`<main>`, `<nav>`, `<section>`, `<header>`).
 
 ---
 
 ## 3. Protocolo de Ejecución (`/opsx-pickup`)
-1. **Lectura de Buzón**:
+
+1. **Paso 0: Auditoría de Definition of Ready (DoR)**:
    - Lee tu ticket en `.agent-inbox/front-ui/{feature-id}.md`.
+   - Si el ticket no define los componentes exactos a maquetar, las rutas en `frontend/` o los hooks de `front-logic` a consumir, detén tu ejecución de inmediato y genera `.agent-inbox/front-ui/BLOCKED_DOR_{feature-id}.md`.
 2. **Implementación**:
    - Maqueta los componentes y pantallas consumiendo los hooks y types creados por `front-logic`.
 3. **Validación Obligatoria**:
