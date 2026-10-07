@@ -1,7 +1,7 @@
 # Especificación Funcional: Espacios Compartidos Multigrupo, N-Miembros, Viajes y Simplificación de Deudas
 
 - **ID de la Feature**: `006-multi-space-shared-expenses`
-- **Estado**: Borrador para Revisión del Usuario (Gate 1 SDD — NO EJECUTAR AÚN)
+- **Estado**: Aprobado por Warren (Gate 1 SDD Superado — Especificación Funcional Completa)
 - **Fecha de Creación**: 2026-10-07
 - **Última Actualización**: 2026-10-07
 - **Especialista de Dominio**: `@warren`
@@ -155,7 +155,29 @@ Un usuario que participa en 4 espacios solo comparte con los integrantes de cada
 - **Y** la interfaz proporciona el botón "Pagar con Bizum a Carlos" con importe de 30.00 € y concepto predefinido,
 - **Y** cuando Sergio realiza el Bizum, Nexus clasifica el movimiento bancario como amortización de pasivo, dejando su deuda con Carlos en 0.00 € sin duplicar el gasto.
 
+### Escenario 5: Reparto con céntimos huérfanos y Banker's Rounding
+- **Dado que** Elena paga 100.00 € en gasolina en un espacio de 3 miembros (Elena, Sergio, Marcos),
+- **Cuando** se imputa el gasto en modalidad equitativa ($1/3$),
+- **Entonces** el sistema aplica redondeo bancario asignando 33.34 € al pagador (Elena) y 33.33 € a Sergio y Marcos respectivamente,
+- **Y** la suma aritmética total de cuotas resultante es exactamente igual a 100.00 € (tolerancia de descuadre: 0.00 €).
+
+### Escenario 6: Aislamiento y Muro de Privacidad Zero-Knowledge entre Espacios
+- **Dado que** Sergio pertenece al espacio "Hogar (Pareja)" con Elena y al espacio "Viaje a Asturias" con Marcos y Carlos,
+- **Cuando** Marcos consulta el balance, histórico de transacciones o informes del espacio "Viaje a Asturias",
+- **Entonces** el sistema no expone ninguna traza, transacción ni balance perteneciente a "Hogar (Pareja)",
+- **Y** el token de autenticación de Marcos devuelve un error HTTP 403 / 404 si intenta acceder mediante API a recursos de espacios en los que no está explícitamente registrado como miembro.
+
+### Escenario 7: Ciclo de vida y Archivo de Espacio Efímero
+- **Dado que** el "Viaje a Asturias" ha finalizado y su balance colectivo neto es de 0.00 € tras las liquidaciones,
+- **Cuando** Sergio (creador o administrador) marca el espacio como "Archivado",
+- **Entonces** el espacio cambia su estado a `Archived`,
+- **Y** desaparece del selector de espacios activos de la TopBar,
+- **Y** se traslada a la pestaña de "Espacios Archivados" del Hub de Espacios en modo de solo lectura (conservando histórico contable inmutable).
+
 ---
 
-## 6. Estado y Siguientes Pasos
-Este documento define la base conceptual del nuevo modelo multiespacio de Nexus. Queda pendiente de revisión y validación por parte del usuario antes de proceder con el diseño técnico y el desglose de tareas de `@jarvis`.
+## 6. Estado y Aprobación
+Este documento define la especificación funcional completa y los invariantes de negocio para la Feature 006. 
+- **Validado por**: `@warren` (Product Owner)
+- **Estado**: Aprobado funcionalmente (Gate 1 SDD superado). Listo para especificación técnica y contratos espejo de `@jarvis`.
+
