@@ -56,7 +56,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
       iban: iban.trim() || null,
       type: type as 1 | 2 | 3,
       holderRole,
-      ownershipPercentage: holderRole === 2 ? ownershipPercentage : holderRole === 3 ? 0 : 100,
+      ownershipPercentage: holderRole === 2 ? ownershipPercentage : (holderRole === 3 || holderRole === 4) ? 0 : 100,
       linkedCardsLast4: cards.length > 0 ? cards : null,
     });
 

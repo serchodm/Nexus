@@ -78,8 +78,11 @@ $$\text{Patrimonio Neto} = \sum \text{Activos Ponderados} - \sum \text{Pasivos P
 - **Préstamos Personales / Auto**: Compromiso de deuda y amortización restante.
 - **Deuda de Consumo**: Tarjetas de crédito revolving y líneas aplazadas.
 
-#### 2.3. Ponderación por Cotitularidad
-- Soporte de roles de titularidad (`SoleOwner`, `PrimaryJoint`, `SecondaryJoint`) con porcentaje explícito de participación ($0\%$ a $100\%$) para no distorsionar el patrimonio neto real en activos o deudas compartidas.
+#### 2.3. Ponderación por Cotitularidad y Cuentas Supervisadas
+- Soporte de roles de titularidad (`Owner`, `JointOwner`, `Authorized`, `LegalGuardian`):
+  - **Cotitularidad Ponderada**: Porcentaje explícito de participación ($0\%$ a $100\%$, por defecto $50\%$) para no distorsionar el patrimonio neto real en cuentas compartidas con la pareja.
+  - **Cuentas Supervisadas / Custodia de Menores**: Rol de tutor legal (`LegalGuardian`) con cómputo patrimonial al $0\%$ para no inflar el patrimonio de los padres, pero permitiendo observabilidad total (extractos, movimientos y categorización).
+  - **Gestión y Reclasificación (Backlog BKLOG-001)**: Capacidad de actualizar el rol y porcentaje tras sincronizaciones de Open Banking (`PATCH /api/bank-accounts/{id}`).
 
 ---
 
@@ -228,7 +231,7 @@ Toda conclusión de Aura debe poder rastrearse en orden inverso hasta la fuente 
 $$\text{Insight Aura} \longrightarrow \text{Conclusión} \longrightarrow \text{Fórmula / Cálculo} \longrightarrow \text{Datos Financieros} \longrightarrow \text{Transacción / Extracto Origen}$$
 Quedan terminantemente prohibidas las respuestas de "caja negra" o justificaciones opacas.
 
-#### 6.7. Reglas Inviolables de Aura (RA-01 a RA-08)
+#### 6.7. Reglas Inviolables de Aura (RA-01 a RA-09)
 - **RA-01 Fuente de Verdad Inmutable**: El Ledger es la única fuente de verdad; Aura jamás altera un registro contable sin orden explícita del usuario.
 - **RA-02 Tolerancia Cero a la Alucinación Financiera**: Si faltan datos para responder con certeza, Aura declara su incertidumbre y solicita los datos necesarios.
 - **RA-03 Separación Hecho / Opinión**: Diferenciación tipográfica y semántica estricta entre hechos, cálculos, inferencias y recomendaciones.
@@ -237,6 +240,7 @@ Quedan terminantemente prohibidas las respuestas de "caja negra" o justificacion
 - **RA-06 Muro de Privacidad por Contexto**: Aura respeta el aislamiento del Shared Ledger; jamás filtra a un cónyuge o tercero datos del espacio individual.
 - **RA-07 Consentimiento Explícito**: Cualquier ajuste de configuración sugerido por Aura requiere confirmación consciente del usuario.
 - **RA-08 Incertidumbre Visible**: Toda proyección de futuro o cálculo condicional expone sus márgenes de error e hipótesis de cálculo.
+- **RA-09 Aislamiento Estricto de Cuentas Tuteladas y de Menores (BKLOG-002)**: Las cuentas con rol `LegalGuardian` o `Authorized` quedan contablemente aisladas del patrimonio del tutor; Aura jamás consolidará estos saldos para calcular el fondo de emergencia, runway o propuestas de inversión del usuario.
 
 #### 6.8. Modelo de Madurez y Evolución Progresiva
 - **Nivel 1 — Observe (Observar)**: Comprensión y consolidación de la situación actual (*"Esto es lo que tienes y gastas"*).

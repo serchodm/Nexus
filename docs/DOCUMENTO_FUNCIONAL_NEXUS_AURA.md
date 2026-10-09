@@ -282,6 +282,18 @@ graph LR
     SumP --> NetWorth
 ```
 
+#### Ponderación por Titularidad y Régimen de Custodia Familiar (RN-12)
+1. **Cotitularidad Ponderada (`HolderRole.JointOwner`)**:
+   - Para cuentas compartidas (ej. cuenta corriente conjunta con la pareja), el saldo total es visible para extractos y operativa, pero el cómputo en el patrimonio neto individual suma únicamente la cuota asignada:
+   $$\text{UserNetWorthShare} = \text{CurrentBalance} \times \frac{\text{OwnershipPercentage}}{100}$$
+   - Por defecto: $50\%$, configurable entre $1\%$ y $99\%$.
+2. **Cuentas Supervisadas y de Menores (`HolderRole.LegalGuardian` / `Authorized`)**:
+   - Cuentas de hijos menores u otros familiares donde el usuario actúa como tutor o autorizado legal.
+   - **Cómputo Patrimonial: 0%**: El saldo pertenece al menor y jamás infla el patrimonio neto del progenitor ($\text{UserNetWorthShare} = 0.00\text{ €}$).
+   - **Observabilidad Plena**: El tutor puede vincular extractos, consultar movimientos, categorizar gastos escolares y seguir metas de ahorro infantil.
+3. **Evolución en Backlog (`BKLOG-001`)**:
+   - Endpoint `PATCH /api/bank-accounts/{id}` para actualizar titularidad y porcentaje tras la sincronización automática de Open Banking (Enable Banking).
+
 ---
 
 ### 3.6. Nexus Aura, Índice de Salud Financiera y Simulador "What-If"
@@ -893,6 +905,7 @@ Aura hereda todos los principios inviolables de Nexus y añade los siguientes:
 - **RA-06 — Privacidad por contexto**: Aura solo puede utilizar información a la que el usuario tenga permiso de acceso. El Muro de Privacidad del Shared Ledger también aplica a la capa de inteligencia.
 - **RA-07 — Confirmación antes de acciones sensibles**: cualquier futura capacidad de ejecución deberá requerir consentimiento explícito y verificable.
 - **RA-08 — Incertidumbre visible**: cuando una conclusión dependa de datos incompletos, estimaciones o hipótesis, Aura debe mostrarlo claramente.
+- **RA-09 — Aislamiento estricto de cuentas tuteladas y de menores (BKLOG-002)**: las cuentas asociadas a figuras de tutela legal (`HolderRole.LegalGuardian` o `Authorized`) no se consolidarán en la métrica patrimonial del tutor ni afectarán a su cálculo de colchón de emergencia o recomendaciones de inversión, garantizando una esfera analítica independiente para la custodia familiar.
 
 Aura es, por tanto, un **agente de inteligencia y decisión asistida**, no un custodio, banco, broker ni ejecutor financiero.
 
